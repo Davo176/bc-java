@@ -22,6 +22,22 @@ public class SNTRUPrimePrivateKeyParameters
         this.hash = Arrays.clone(hash);
     }
 
+    public SNTRUPrimePrivateKeyParameters(SNTRUPrimeParameters params, byte[] sk)
+    {
+        super(true, params);
+        int fLength = (params.getP()+3) /4;
+        int ginvLength = (params.getP()+3) /4;
+        int pkLength = params.getPublicKeyBytes();
+        int rhoLength = (params.getP()+3) /4;
+
+        this.f = Arrays.copyOfRange(sk,0,fLength);
+        this.ginv = Arrays.copyOfRange(sk,fLength,fLength+ginvLength);
+        this.pk = Arrays.copyOfRange(sk,fLength+ginvLength,fLength+ginvLength+pkLength);
+        this.rho = Arrays.copyOfRange(sk,fLength+ginvLength+pkLength,fLength+ginvLength+pkLength+rhoLength);
+        this.hash = Arrays.copyOfRange(sk,fLength+ginvLength+pkLength+rhoLength,sk.length);
+    }
+
+
     public byte[] getF()
     {
         return Arrays.clone(f);

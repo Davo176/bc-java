@@ -19,6 +19,20 @@ public class NTRULPRimePrivateKeyParameters
         this.hash = Arrays.clone(hash);
     }
 
+    public NTRULPRimePrivateKeyParameters(NTRULPRimeParameters params, byte[] sk)
+    {
+        super(true, params);
+        int encaLength = (params.getP()+3) / 4;
+        int pkLength = params.getPublicKeyBytes();
+        int rhoLength = 32;
+
+        this.enca = Arrays.copyOfRange(sk,0,encaLength);
+        this.pk = Arrays.copyOfRange(sk,encaLength,encaLength+pkLength);
+        this.rho = Arrays.copyOfRange(sk,encaLength+pkLength,encaLength+pkLength+rhoLength);
+        this.hash = Arrays.copyOfRange(sk,encaLength+pkLength+rhoLength,sk.length);
+    }
+
+
     public byte[] getEnca()
     {
         return Arrays.clone(enca);
