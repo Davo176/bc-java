@@ -1,17 +1,11 @@
 package org.bouncycastle.pqc.crypto.test.additionalTesting.tests.sphincsplus;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.security.SecureRandom;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 
 import junit.framework.TestCase;
-import org.bouncycastle.asn1.pkcs.PrivateKeyInfo;
-import org.bouncycastle.asn1.x509.SubjectPublicKeyInfo;
 import org.bouncycastle.crypto.AsymmetricCipherKeyPair;
 import org.bouncycastle.crypto.params.ParametersWithRandom;
 import org.bouncycastle.pqc.crypto.sphincsplus.SPHINCSPlusKeyGenerationParameters;
@@ -20,10 +14,6 @@ import org.bouncycastle.pqc.crypto.sphincsplus.SPHINCSPlusParameters;
 import org.bouncycastle.pqc.crypto.sphincsplus.SPHINCSPlusPrivateKeyParameters;
 import org.bouncycastle.pqc.crypto.sphincsplus.SPHINCSPlusPublicKeyParameters;
 import org.bouncycastle.pqc.crypto.sphincsplus.SPHINCSPlusSigner;
-import org.bouncycastle.pqc.crypto.util.PrivateKeyFactory;
-import org.bouncycastle.pqc.crypto.util.PrivateKeyInfoFactory;
-import org.bouncycastle.pqc.crypto.util.PublicKeyFactory;
-import org.bouncycastle.pqc.crypto.util.SubjectPublicKeyInfoFactory;
 import org.bouncycastle.util.Arrays;
 import org.bouncycastle.util.encoders.Hex;
 import org.bouncycastle.util.test.FixedSecureRandom;
@@ -36,42 +26,42 @@ public class SphincsplusTest
         throws Exception
     {
         String files[] = new String[]{
-            "subset_haraka-128f-robust.rsp",
-            "subset_haraka-128f-simple.rsp",
-            "subset_haraka-128s-robust.rsp",
-            "subset_haraka-128s-simple.rsp",
-            "subset_haraka-192f-robust.rsp",
-            "subset_haraka-192f-simple.rsp",
-            "subset_haraka-192s-robust.rsp",
-            "subset_haraka-192s-simple.rsp",
-            "subset_haraka-256f-robust.rsp",
-            "subset_haraka-256f-simple.rsp",
-            "subset_haraka-256s-robust.rsp",
-            "subset_haraka-256s-simple.rsp",
-            "subset_sha2-128f-robust.rsp",
-            "subset_sha2-128f-simple.rsp",
-            "subset_sha2-128s-robust.rsp",
-            "subset_sha2-128s-simple.rsp",
-            "subset_sha2-192f-robust.rsp",
-            "subset_sha2-192f-simple.rsp",
-            "subset_sha2-192s-robust.rsp",
-            "subset_sha2-192s-simple.rsp",
-            "subset_sha2-256f-robust.rsp",
-            "subset_sha2-256f-simple.rsp",
-            "subset_sha2-256s-robust.rsp",
-            "subset_sha2-256s-simple.rsp",
-            "subset_shake-128f-robust.rsp",
-            "subset_shake-128f-simple.rsp",
-            "subset_shake-128s-robust.rsp",
-            "subset_shake-128s-simple.rsp",
-            "subset_shake-192f-robust.rsp",
-            "subset_shake-192f-simple.rsp",
-            "subset_shake-192s-robust.rsp",
-            "subset_shake-192s-simple.rsp",
-            "subset_shake-256f-robust.rsp",
-            "subset_shake-256f-simple.rsp",
-            "subset_shake-256s-robust.rsp",
-            "subset_shake-256s-simple.rsp",
+            "sphincs-haraka-128f-robust.rsp",
+            "sphincs-haraka-128f-simple.rsp",
+            "sphincs-haraka-128s-robust.rsp",
+            "sphincs-haraka-128s-simple.rsp",
+            "sphincs-haraka-192f-robust.rsp",
+            "sphincs-haraka-192f-simple.rsp",
+            "sphincs-haraka-192s-robust.rsp",
+            "sphincs-haraka-192s-simple.rsp",
+            "sphincs-haraka-256f-robust.rsp",
+            "sphincs-haraka-256f-simple.rsp",
+            "sphincs-haraka-256s-robust.rsp",
+            "sphincs-haraka-256s-simple.rsp",
+            "sphincs-sha2-128f-robust.rsp",
+            "sphincs-sha2-128f-simple.rsp",
+            "sphincs-sha2-128s-robust.rsp",
+            "sphincs-sha2-128s-simple.rsp",
+            "sphincs-sha2-192f-robust.rsp",
+            "sphincs-sha2-192f-simple.rsp",
+            "sphincs-sha2-192s-robust.rsp",
+            "sphincs-sha2-192s-simple.rsp",
+            "sphincs-sha2-256f-robust.rsp",
+            "sphincs-sha2-256f-simple.rsp",
+            "sphincs-sha2-256s-robust.rsp",
+            "sphincs-sha2-256s-simple.rsp",
+            "sphincs-shake-128f-robust.rsp",
+            "sphincs-shake-128f-simple.rsp",
+            "sphincs-shake-128s-robust.rsp",
+            "sphincs-shake-128s-simple.rsp",
+            "sphincs-shake-192f-robust.rsp",
+            "sphincs-shake-192f-simple.rsp",
+            "sphincs-shake-192s-robust.rsp",
+            "sphincs-shake-192s-simple.rsp",
+            "sphincs-shake-256f-robust.rsp",
+            "sphincs-shake-256f-simple.rsp",
+            "sphincs-shake-256s-robust.rsp",
+            "sphincs-shake-256s-simple.rsp",
         };
 
         SPHINCSPlusParameters[] params = new SPHINCSPlusParameters[]{
@@ -116,7 +106,7 @@ public class SphincsplusTest
         for (int i = 0; i != files.length; i++)
         {
             String name = files[i];
-            InputStream src = SphincsplusTest.class.getResourceAsStream("/org/bouncycastle/pqc/crypto/test/sphincs_plus/" + name);
+            InputStream src = SphincsplusTest.class.getResourceAsStream("/org/bouncycastle/pqc/crypto/test/additionalTesting/resources/sphincsplus/" + name);
             BufferedReader br = new BufferedReader(new InputStreamReader(src));
             System.out.println(name);
             String line = null;

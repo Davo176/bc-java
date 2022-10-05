@@ -81,8 +81,6 @@ public class KyberDecapsulationTest
                 //Generate Random from seed (assume this works correctly)
                 //NISTSecureRandom random = new NISTSecureRandom(seed, null);
 
-                /* Had working on old commit
-
                 KyberPrivateKeyParameters privParams = new KyberPrivateKeyParameters(params, sk);
 
                 KyberKEMExtractor KyberDecCipher = new KyberKEMExtractor(privParams);
@@ -91,7 +89,7 @@ public class KyberDecapsulationTest
                 //ASSERT EQUAL
                 String baseAssertMessage = "TEST FAILED: " + name+ " " + count + ": ";
                 assertTrue(baseAssertMessage+"shared secret from party 1", Arrays.areEqual(expectedSs,0,params.getSessionKeySize()/8,decapsulatedSecret,0,params.getSessionKeySize()/8));
-                System.out.println("All Passed");*/
+                System.out.println("All Passed");
             }
         }
     }

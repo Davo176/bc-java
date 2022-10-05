@@ -101,45 +101,42 @@ public class FalconTest
                 FalconKeyPairGenerator kpg = new FalconKeyPairGenerator();
                 kpg.init(kparam);
                 AsymmetricCipherKeyPair ackp = kpg.generateKeyPair();
-                //byte[] respk = ((FalconPublicKeyParameters)ackp.getPublic()).getEncoded();
+                byte[] respk = ((FalconPublicKeyParameters)ackp.getPublic()).getH();
                 byte[] ressk = ((FalconPrivateKeyParameters)ackp.getPrivate()).getEncoded();
 
                 // sign
-                FalconSigner signer = new FalconSigner();
-                //FalconPrivateKeyParameters skparam = new FalconPrivateKeyParameters(parameters[fileindex], ressk);
-                //Had working on old commit
-
-                // ParametersWithRandom skwrand = new ParametersWithRandom(skparam, random);
-                // signer.init(true, skwrand);
-                // byte[] sig = signer.generateSignature(msg);
-                // byte[] ressm = new byte[2 + msg.length + sig.length - 1];
-                // //huhhhh surely this should all be abstracted
-                // ressm[0] = (byte)((sig.length - 40 - 1) >>> 8);
-                // ressm[1] = (byte)(sig.length - 40 - 1);
-                // System.arraycopy(sig, 1, ressm, 2, 40);
-                // System.arraycopy(msg, 0, ressm, 2 + 40, msg.length);
-                // System.arraycopy(sig, 40 + 1, ressm, 2 + 40 + msg.length, sig.length - 40 - 1);
+                FalconSigner signer = new FalconSigner();              
+                ParametersWithRandom skwrand = new ParametersWithRandom(ackp.getPrivate(), random);
+                signer.init(true, skwrand);
+                byte[] sig = signer.generateSignature(msg);
+                byte[] ressm = new byte[2 + msg.length + sig.length - 1];
+                //huhhhh surely this should all be abstracted
+                ressm[0] = (byte)((sig.length - 40 - 1) >>> 8);
+                ressm[1] = (byte)(sig.length - 40 - 1);
+                System.arraycopy(sig, 1, ressm, 2, 40);
+                System.arraycopy(msg, 0, ressm, 2 + 40, msg.length);
+                System.arraycopy(sig, 40 + 1, ressm, 2 + 40 + msg.length, sig.length - 40 - 1);
  
-                // // verify
-                // FalconSigner verifier = new FalconSigner();
-                // FalconPublicKeyParameters pkparam = new FalconPublicKeyParameters(parameters[fileindex], respk);
-                // verifier.init(false, pkparam);
-                // //huhhh surely this should all be abstracted
-                // byte[] noncesig = new byte[expectedSm_len - m_len - 2 + 1];
-                // noncesig[0] = (byte)(0x30 + parameters[fileindex].getLogN());
-                // System.arraycopy(expectedSm, 2, noncesig, 1, 40);
-                // System.arraycopy(expectedSm, 2 + 40 + m_len, noncesig, 40 + 1, expectedSm_len - 2 - 40 - m_len);
+                // verify
+                FalconSigner verifier = new FalconSigner();
+                FalconPublicKeyParameters pkparam = (FalconPublicKeyParameters)ackp.getPublic();
+                verifier.init(false, pkparam);
+                //huhhh surely this should all be abstracted
+                byte[] noncesig = new byte[expectedSm_len - m_len - 2 + 1];
+                noncesig[0] = (byte)(0x30 + parameters[fileindex].getLogN());
+                System.arraycopy(expectedSm, 2, noncesig, 1, 40);
+                System.arraycopy(expectedSm, 2 + 40 + m_len, noncesig, 40 + 1, expectedSm_len - 2 - 40 - m_len);
 
-                // boolean isValid = verifier.verifySignature(msg, noncesig);
+                boolean isValid = verifier.verifySignature(msg, noncesig);
 
-                // // AssertTrue
-                // //keygen
-                // assertTrue(name + " " + count + " public key", Arrays.areEqual(respk, expectedPk));
-                // assertTrue(name + " " + count + " public key", Arrays.areEqual(ressk, expectedSk));
-                // //sign
-                // assertTrue(name + " " + count + " signature", Arrays.areEqual(ressm, ressm));
-                // //verify
-                // assertTrue(name + " " + count + " verify failed when should pass", isValid);
+                // AssertTrue
+                //keygen
+                assertTrue(name + " " + count + " public key", Arrays.areEqual(respk, 0, respk.length, expectedPk, 1, expectedPk.length));
+                assertTrue(name + " " + count + " public key", Arrays.areEqual(ressk, 0, ressk.length, expectedSk, 1, expectedSk.length));
+                //sign
+                assertTrue(name + " " + count + " signature", Arrays.areEqual(ressm, ressm));
+                //verify
+                assertTrue(name + " " + count + " verify failed when should pass", isValid);
             }
         }
     }

@@ -21,6 +21,24 @@ public class KyberPrivateKeyParameters
         this.rho = Arrays.clone(rho);
     }
 
+    public KyberPrivateKeyParameters(KyberParameters params, byte[] sk)
+    {
+        super(true, params);
+
+        KyberEngine engine= params.getEngine();
+        int sLength = engine.getKyberIndCpaSecretKeyBytes();
+        int hpkLength = 32;
+        int nonceLength = KyberEngine.KyberSymBytes;
+        int tLength = engine.getKyberIndCpaSecretKeyBytes()-32;
+        int rhoLength = 32; 
+
+        this.s = Arrays.copyOfRange(sk,0,sLength);
+        this.t = Arrays.copyOfRange(sk,sLength,sLength+tLength);
+        this.rho = Arrays.copyOfRange(sk,sLength+tLength,sLength+tLength+rhoLength);
+        this.hpk = Arrays.copyOfRange(sk,sLength+tLength+nonceLength,sLength+tLength+nonceLength+rhoLength);
+        this.nonce = Arrays.copyOfRange(sk,sLength+tLength+rhoLength+hpkLength,sk.length);
+    }
+
     public byte[] getT()
     {
         return Arrays.clone(t);
