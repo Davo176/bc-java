@@ -1,5 +1,6 @@
 package org.bouncycastle.pqc.crypto.crystals.dilithium;
 
+import java.security.SecureRandom;
 import org.bouncycastle.util.Arrays;
 
 public class DilithiumPrivateKeyParameters
@@ -29,6 +30,26 @@ public class DilithiumPrivateKeyParameters
         this.s2 = Arrays.clone(s2);
         this.t0 = Arrays.clone(t0);
         this.t1 = Arrays.clone(t1);
+    }
+
+    public DilithiumPrivateKeyParameters(DilithiumParameters params, byte[] sk, SecureRandom random)
+    {
+        super(true, params);
+        DilithiumEngine engine = params.getEngine(random);
+        int rhoLength = DilithiumEngine.SeedBytes;
+        int kLength = DilithiumEngine.SeedBytes;
+        int trLength = DilithiumEngine.SeedBytes;
+        int s1Length = engine.getDilithiumL() * engine.getDilithiumPolyEtaPackedBytes();
+        int s2Length = engine.getDilithiumK() * engine.getDilithiumPolyEtaPackedBytes();
+        int t0Length = engine.getDilithiumK() * DilithiumEngine.DilithiumPolyT0PackedBytes;
+        
+        this.rho = Arrays.copyOfRange(sk,0,rhoLength);
+        this.k = Arrays.copyOfRange(sk,rhoLength,rhoLength+kLength);
+        this.tr = Arrays.copyOfRange(sk,rhoLength+kLength,rhoLength+kLength+trLength);
+        this.s1 = Arrays.copyOfRange(sk,rhoLength+kLength+trLength,rhoLength+kLength+trLength+s1Length);
+        this.s2 = Arrays.copyOfRange(sk,rhoLength+kLength+trLength+s1Length,rhoLength+kLength+trLength+s1Length+s2Length);
+        this.t0 = Arrays.copyOfRange(sk,rhoLength+kLength+trLength+s1Length+s2Length,rhoLength+kLength+trLength+s1Length+s2Length+t0Length);
+        this.t1 = Arrays.copyOfRange(sk,rhoLength+kLength+trLength+s1Length+s2Length+t0Length,sk.length);
     }
 
     public byte[] getRho()
