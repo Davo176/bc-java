@@ -22,9 +22,9 @@ public class BikeDecapsulationTesting
     {
         String[] files;
         files = new String[]{
-            "additionalDecap3114.rsp",
-            "additionalDecap6198.rsp",
-            "additionalDecap10276.rsp",
+            "additionalDecap3114.rsp", //fail
+            "additionalDecap6198.rsp", //fail
+            "additionalDecap10276.rsp", //fail
         };
 
         BIKEParameters[] paramList = {
@@ -69,7 +69,7 @@ public class BikeDecapsulationTesting
                 line = br.readLine();
 
                 //convert all into byte arrays
-                byte[] seed = Hex.decode(seedString); 
+                byte[] seed = Hex.decode(seedString);
                 byte[] sk = Hex.decode(secretKeyString);
                 byte[] ct = Hex.decode(cipherTextString);
                 byte[] expectedSs = Hex.decode(sharedSecretString);
@@ -78,17 +78,15 @@ public class BikeDecapsulationTesting
 
                 //Get Parameters
                 BIKEParameters parameters = paramList[fileIndex];
-                //Generate Random from seed (assume this works correctly)
-                NISTSecureRandom random = new NISTSecureRandom(seed, null);
 
                 byte[] h0 = Arrays.copyOfRange(sk,0,parameters.getRByte());
                 byte[] h1 = Arrays.copyOfRange(sk,parameters.getRByte(),2*parameters.getRByte());
                 byte[] sigma = Arrays.copyOfRange(sk,2*parameters.getRByte(),sk.length);
 
-                BIKEPrivateKeyParameters privParams = new BIKEPrivateKeyParameters(parameters,h0, h1, sigma);
+                BIKEPrivateKeyParameters privateKeyParams = new BIKEPrivateKeyParameters(parameters,h0, h1, sigma);
 
-                BIKEKEMExtractor bikekemExtractor = new BIKEKEMExtractor(privParams);
-                byte[] decapsulatedSecret = bikekemExtractor.extractSecret(ct);
+                BIKEKEMExtractor decapsulator = new BIKEKEMExtractor(privateKeyParams);
+                byte[] decapsulatedSecret = decapsulator.extractSecret(ct);
 
                 //ASSERT EQUAL
                 String baseAssertMessage = "TEST FAILED: " + name+ " " + count + ": ";

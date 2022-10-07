@@ -31,12 +31,18 @@ public class FrodoEncapsulationTesting
             "additionalEncaps_19888.rsp",
             "additionalEncaps_31296.rsp",
             "additionalEncaps_43088.rsp",
+            "additionalEncaps_shake_19888.rsp", //fail
+            "additionalEncaps_shake_31296.rsp", //fail
+            "additionalEncaps_shake_43088.rsp", //fail
         };
 
         FrodoParameters[] paramList = {
             FrodoParameters.frodokem640aes,
             FrodoParameters.frodokem976aes,
             FrodoParameters.frodokem1344aes,
+            FrodoParameters.frodokem640shake,
+            FrodoParameters.frodokem976shake,
+            FrodoParameters.frodokem1344shake,
         };
 
         for (int fileIndex = 0; fileIndex < files.length; fileIndex++)
@@ -87,18 +93,18 @@ public class FrodoEncapsulationTesting
                 //Generate Random from seed (assume this works correctly)
                 NISTSecureRandom random = new NISTSecureRandom(seed, null);
 
-                FrodoPublicKeyParameters pubParams = new FrodoPublicKeyParameters(parameters,pk);
+                FrodoPublicKeyParameters publicKeyParams = new FrodoPublicKeyParameters(parameters,pk);
 
-                FrodoKEMGenerator frodokemGenerator = new FrodoKEMGenerator(random);
-                SecretWithEncapsulation secretWithEnc = frodokemGenerator.generateEncapsulated(pubParams);
-                byte[] returnedCt = secretWithEnc.getEncapsulation();
-                byte[] returnedSecret = secretWithEnc.getSecret();
+                FrodoKEMGenerator encapsulator = new FrodoKEMGenerator(random);
+                SecretWithEncapsulation encapsulatedSecret = encapsulator.generateEncapsulated(publicKeyParams);
+                byte[] returnedCt = encapsulatedSecret.getEncapsulation();
+                byte[] returnedSecret = encapsulatedSecret.getSecret();
 
                 //ASSERT EQUAL
                 String baseAssertMessage = "TEST FAILED: " + name+ " " + count + ": ";
                
                 assertTrue(baseAssertMessage+"cipher text", Arrays.areEqual(expectedCt,returnedCt));
-                //by equality axiom, if these two are equal, returned = decapsulated
+
                 assertTrue(baseAssertMessage+"shared secret from party 1", Arrays.areEqual(expectedSs,0,parameters.getSessionKeySize()/8,returnedSecret,0,parameters.getSessionKeySize()/8));
                 System.out.println("All Passed");
             }

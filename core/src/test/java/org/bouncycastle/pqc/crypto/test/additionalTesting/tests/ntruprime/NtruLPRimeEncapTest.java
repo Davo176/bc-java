@@ -23,22 +23,22 @@ public class NtruLPRimeEncapTest
     {
         String[] files;
         files = new String[]{
-            "addEncap653.rsp",
-            "addEncap761.rsp",
+            "addEncap653.rsp", //fail
+            "addEncap761.rsp", //fail
             "addEncap857.rsp",
             "addEncap953.rsp",
-            "addEncap1013.rsp",
-            "addEncap1277.rsp",
+            "addEncap1013.rsp", //fail
+            "addEncap1277.rsp", //fail
         };
 
         NTRULPRimeParameters[] paramList = new NTRULPRimeParameters[]
         {
-                NTRULPRimeParameters.ntrulpr653,
-                NTRULPRimeParameters.ntrulpr761,
-                NTRULPRimeParameters.ntrulpr857,
-                NTRULPRimeParameters.ntrulpr953,
-                NTRULPRimeParameters.ntrulpr1013,
-                NTRULPRimeParameters.ntrulpr1277
+            NTRULPRimeParameters.ntrulpr653,
+            NTRULPRimeParameters.ntrulpr761,
+            NTRULPRimeParameters.ntrulpr857,
+            NTRULPRimeParameters.ntrulpr953,
+            NTRULPRimeParameters.ntrulpr1013,
+            NTRULPRimeParameters.ntrulpr1277
         };
 
         for (int fileIndex = 0; fileIndex < files.length; fileIndex++)
@@ -93,10 +93,10 @@ public class NtruLPRimeEncapTest
                 
                 //Calculate Values
                 //Generate Key Pairs
-                NTRULPRimePublicKeyParameters pubParams = new NTRULPRimePublicKeyParameters(params, pk);
+                NTRULPRimePublicKeyParameters publicKeyParams = new NTRULPRimePublicKeyParameters(params, pk);
 
-                NTRULPRimeKEMGenerator kemGenerator = new NTRULPRimeKEMGenerator(random);
-                SecretWithEncapsulation secretEncapsulation = kemGenerator.generateEncapsulated(pubParams);
+                NTRULPRimeKEMGenerator encapsulator = new NTRULPRimeKEMGenerator(random);
+                SecretWithEncapsulation secretEncapsulation = encapsulator.generateEncapsulated(publicKeyParams);
                 byte[] returnedCt = secretEncapsulation.getEncapsulation();
 
                 byte[] returnedSecret = secretEncapsulation.getSecret();

@@ -28,9 +28,9 @@ public class KyberTest
     {
         String[] files;
         files = new String[]{
-            "kyber512.rsp",
-            "kyber768.rsp",
-            "kyber1024.rsp",
+            "addRand_1632.rsp",
+            "addRand_2400.rsp",
+            "addRand_3168.rsp",
         };
 
         KyberParameters[] paramList = new KyberParameters[]{
@@ -43,7 +43,7 @@ public class KyberTest
         {
             String name = files[fileIndex];
             System.out.println("testing: " + name);
-            InputStream src = KyberTest.class.getResourceAsStream("/org/bouncycastle/pqc/crypto/test/kyber/" + name);
+            InputStream src = KyberTest.class.getResourceAsStream("/org/bouncycastle/pqc/crypto/test/additionalTesting/resources/kyber/" + name);
             BufferedReader br = new BufferedReader(new InputStreamReader(src));
 
             String line = null;
@@ -92,28 +92,28 @@ public class KyberTest
                 //Generate Random from seed (assume this works correctly)
                 NISTSecureRandom random = new NISTSecureRandom(seed, null);
 
-                KyberKeyPairGenerator kpGen = new KyberKeyPairGenerator();
-                KyberKeyGenerationParameters genParam = new KyberKeyGenerationParameters(random, params);
+                KyberKeyPairGenerator keyGenerator = new KyberKeyPairGenerator();
+                KyberKeyGenerationParameters generationParams = new KyberKeyGenerationParameters(random, params);
 
-                kpGen.init(genParam);
-                AsymmetricCipherKeyPair kp = kpGen.generateKeyPair();
+                keyGenerator.init(generationParams);
+                AsymmetricCipherKeyPair kp = keyGenerator.generateKeyPair();
 
-                KyberPublicKeyParameters pubParams = (KyberPublicKeyParameters)(KyberPublicKeyParameters)kp.getPublic();
-                KyberPrivateKeyParameters privParams = (KyberPrivateKeyParameters)(KyberPrivateKeyParameters)kp.getPrivate();
+                KyberPublicKeyParameters publicKeyParams = (KyberPublicKeyParameters)(KyberPublicKeyParameters)kp.getPublic();
+                KyberPrivateKeyParameters privateKeyParams = (KyberPrivateKeyParameters)(KyberPrivateKeyParameters)kp.getPrivate();
 
-                byte[] returnedPk=pubParams.getPublicKey();
-                byte[] returnedSk=privParams.getPrivateKey();
+                byte[] returnedPk=publicKeyParams.getPublicKey();
+                byte[] returnedSk=privateKeyParams.getPrivateKey();
 
-                KyberKEMGenerator KyberEncCipher = new KyberKEMGenerator(random);
-                SecretWithEncapsulation secretWithEnc = KyberEncCipher.generateEncapsulated(pubParams);
-                byte[] returnedCt = secretWithEnc.getEncapsulation();
+                KyberKEMGenerator encapsulator = new KyberKEMGenerator(random);
+                SecretWithEncapsulation encapsulatedSecret = encapsulator.generateEncapsulated(publicKeyParams);
+                byte[] returnedCt = encapsulatedSecret.getEncapsulation();
 
-                byte[] returnedSecret = secretWithEnc.getSecret();
+                byte[] returnedSecret = encapsulatedSecret.getSecret();
 
-                //KyberPrivateKeyParameters privParams2 = new KyberPrivateKeyParameters(params, expectedSk);;
+                //KyberPrivateKeyParameters privateKeyParams2 = new KyberPrivateKeyParameters(params, expectedSk);;
 
-                KyberKEMExtractor KyberDecCipher = new KyberKEMExtractor(privParams);
-                byte[] decapsulatedSecret = KyberDecCipher.extractSecret(expectedCt);
+                KyberKEMExtractor decapsulator = new KyberKEMExtractor(privateKeyParams);
+                byte[] decapsulatedSecret = decapsulator.extractSecret(returnedCt);
 
 
                 //ASSERT EQUAL

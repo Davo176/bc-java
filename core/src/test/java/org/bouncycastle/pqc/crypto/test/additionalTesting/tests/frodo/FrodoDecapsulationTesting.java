@@ -29,14 +29,20 @@ public class FrodoDecapsulationTesting
         String[] files;
         files = new String[]{
             "addDecapsTest_19888.rsp",
-            "addDecapsTest_31296.rsp",
-            "addDecapsTest_43088.rsp",
+            "addDecapsTest_31296.rsp", //fail
+            "addDecapsTest_43088.rsp", //fail
+            "addDecapsTest_shake_19888.rsp", //fail
+            "addDecapsTest_shake_31296.rsp", //fail
+            "addDecapsTest_shake_43088.rsp", //fail
         };
 
         FrodoParameters[] paramList = {
             FrodoParameters.frodokem640aes,
             FrodoParameters.frodokem976aes,
             FrodoParameters.frodokem1344aes,
+            FrodoParameters.frodokem640shake,
+            FrodoParameters.frodokem976shake,
+            FrodoParameters.frodokem1344shake,
         };
 
         for (int fileIndex = 0; fileIndex < files.length; fileIndex++)
@@ -85,10 +91,10 @@ public class FrodoDecapsulationTesting
                 //Get Parameters
                 FrodoParameters parameters = paramList[fileIndex];
 
-                FrodoPrivateKeyParameters privParams = new FrodoPrivateKeyParameters(parameters,sk);
+                FrodoPrivateKeyParameters privateKeyParams = new FrodoPrivateKeyParameters(parameters,sk);
 
-                FrodoKEMExtractor frodokemExtractor = new FrodoKEMExtractor(privParams);
-                byte[] decapsulatedSecret = frodokemExtractor.extractSecret(ct);
+                FrodoKEMExtractor decapsulator = new FrodoKEMExtractor(privateKeyParams);
+                byte[] decapsulatedSecret = decapsulator.extractSecret(ct);
 
                 //ASSERT EQUAL
                 String baseAssertMessage = "TEST FAILED: " + name+ " " + count + ": ";

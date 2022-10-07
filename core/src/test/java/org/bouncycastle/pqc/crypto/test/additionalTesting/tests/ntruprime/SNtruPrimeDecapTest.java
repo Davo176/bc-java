@@ -28,21 +28,17 @@ extends TestCase
     {
         String[] files;
         files = new String[]{
-            "addDecap653.rsp",
-            "addDecap761.rsp",
-            "addDecap857.rsp",
-            "addDecap953.rsp",
-            "addDecap1013.rsp",
-            "addDecap1277.rsp",
+            "addDecap653.rsp", //fail
+            "addDecap761.rsp", //fail
+            "addDecap857.rsp", //fail
+            "addDecap953.rsp", //fail
+            "addDecap1013.rsp",//fail
+            "addDecap1277.rsp",//fail
         };
 
         SNTRUPrimeParameters[] paramList = new SNTRUPrimeParameters[]
         {
-            SNTRUPrimeParameters.sntrup653,
-            SNTRUPrimeParameters.sntrup761,
-            SNTRUPrimeParameters.sntrup857,
-            SNTRUPrimeParameters.sntrup953,
-            SNTRUPrimeParameters.sntrup1013,
+            SNTRUPrimeParameters.sntrup653, 
             SNTRUPrimeParameters.sntrup1277
         };
 
@@ -93,10 +89,10 @@ extends TestCase
 
                 SNTRUPrimeParameters params = paramList[fileIndex];
 
-                SNTRUPrimePrivateKeyParameters privParams = new SNTRUPrimePrivateKeyParameters(params,sk);
+                SNTRUPrimePrivateKeyParameters privateKeyParams = new SNTRUPrimePrivateKeyParameters(params,sk);
 
-                SNTRUPrimeKEMExtractor kemExtractor = new SNTRUPrimeKEMExtractor(privParams);
-                byte[] decapsulatedSecret = kemExtractor.extractSecret(ct);
+                SNTRUPrimeKEMExtractor decapsulator = new SNTRUPrimeKEMExtractor(privateKeyParams);
+                byte[] decapsulatedSecret = decapsulator.extractSecret(ct);
 
                 //ASSERT EQUAL
                 String baseAssertMessage = "TEST FAILED: " + name+ " " + count + ": ";

@@ -126,33 +126,31 @@ public class PicnicTest
                 NISTSecureRandom random = new NISTSecureRandom(seed, null);
                 PicnicParameters parameters = params[fileIndex];
 
-
-                PicnicKeyPairGenerator kpGen = new PicnicKeyPairGenerator();
+                PicnicKeyPairGenerator keyGenerator = new PicnicKeyPairGenerator();
                 PicnicKeyGenerationParameters genParams = new PicnicKeyGenerationParameters(random, parameters);
                 //
                 // Generate keys and test.
                 //
-                kpGen.init(genParams);
-                AsymmetricCipherKeyPair kp = kpGen.generateKeyPair();
+                keyGenerator.init(genParams);
+                AsymmetricCipherKeyPair kp = keyGenerator.generateKeyPair();
 
-
-                PicnicPublicKeyParameters pubParams = (PicnicPublicKeyParameters) PublicKeyFactory.createKey(SubjectPublicKeyInfoFactory.createSubjectPublicKeyInfo(kp.getPublic()));
-                PicnicPrivateKeyParameters privParams = (PicnicPrivateKeyParameters) PrivateKeyFactory.createKey(PrivateKeyInfoFactory.createPrivateKeyInfo(kp.getPrivate()));
-
-                assertTrue(name + " " + count + ": public key", Arrays.areEqual(expectedPk, pubParams.getEncoded()));
-                assertTrue(name + " " + count + ": secret key", Arrays.areEqual(expectedSk, privParams.getEncoded()));
+                PicnicPublicKeyParameters publicKeyParams = (PicnicPublicKeyParameters) PublicKeyFactory.createKey(SubjectPublicKeyInfoFactory.createSubjectPublicKeyInfo(kp.getPublic()));
+                PicnicPrivateKeyParameters privateKeyParams = (PicnicPrivateKeyParameters) PrivateKeyFactory.createKey(PrivateKeyInfoFactory.createPrivateKeyInfo(kp.getPrivate()));
 
                 PicnicSigner signer = new PicnicSigner();
-
-                signer.init(true, privParams);
-
+                
+                signer.init(true, privateKeyParams);
+                
                 byte[] sigGenerated = signer.generateSignature(msg);
                 byte[] attachedSig = Arrays.concatenate(Pack.intToLittleEndian(sigGenerated.length), msg, sigGenerated);
-
+                
+                signer.init(false, publicKeyParams);
+                
+                assertTrue(name + " " + count + ": public key", Arrays.areEqual(expectedPk, publicKeyParams.getEncoded()));
+                assertTrue(name + " " + count + ": secret key", Arrays.areEqual(expectedSk, privateKeyParams.getEncoded()));
+                
                 assertEquals(name + " " + count + ": signature length", expectedSm_len, attachedSig.length);
-
-                signer.init(false, pubParams);
-
+                
                 assertTrue(name + " " + count + ": signature verify", signer.verifySignature(msg, sigGenerated));
                 assertTrue(name + " " + count + ": signature gen match", Arrays.areEqual(expectedSm, attachedSig));
             }

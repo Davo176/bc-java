@@ -28,9 +28,9 @@ public class SaberTest
     {
         String[] files;
         files = new String[]{
-            "lightsaber.rsp",
-            "saber.rsp",
-            "firesaber.rsp"
+            "addRand_1568.rsp",
+            "addRand_2304.rsp",
+            "addRand_3040.rsp"
         };
 
         SABERParameters[] paramList = new SABERParameters[] {
@@ -43,7 +43,7 @@ public class SaberTest
         {
             String name = files[fileIndex];
             System.out.println("testing: " + name);
-            InputStream src = SaberTest.class.getResourceAsStream("/org/bouncycastle/pqc/crypto/test/saber/" + name);
+            InputStream src = SaberTest.class.getResourceAsStream("/org/bouncycastle/pqc/crypto/test/additionalTesting/resources/saber/" + name);
             BufferedReader br = new BufferedReader(new InputStreamReader(src));
 
             String line = null;
@@ -92,31 +92,28 @@ public class SaberTest
                 //Generate Random from seed (assume this works correctly)
                 NISTSecureRandom random = new NISTSecureRandom(seed, null);
                 
-                SABERKeyPairGenerator kpGen = new SABERKeyPairGenerator();
-                SABERKeyGenerationParameters genParam = new SABERKeyGenerationParameters(random, parameters);
+                SABERKeyPairGenerator keyGenerator = new SABERKeyPairGenerator();
+                SABERKeyGenerationParameters generationParams = new SABERKeyGenerationParameters(random, parameters);
                 
-                kpGen.init(genParam);
-                AsymmetricCipherKeyPair keyPair = kpGen.generateKeyPair();
+                keyGenerator.init(generationParams);
+                AsymmetricCipherKeyPair keyPair = keyGenerator.generateKeyPair();
 
-                SABERPublicKeyParameters pubParams = (SABERPublicKeyParameters)keyPair.getPublic();
-                SABERPrivateKeyParameters privParams = (SABERPrivateKeyParameters)keyPair.getPrivate();
+                SABERPublicKeyParameters publicKeyParams = (SABERPublicKeyParameters)keyPair.getPublic();
+                SABERPrivateKeyParameters privateKeyParams = (SABERPrivateKeyParameters)keyPair.getPrivate();
 
-                byte[] returnedPk = pubParams.getEncoded();
-                byte[] returnedSk = privParams.getEncoded();
+                byte[] returnedPk = publicKeyParams.getEncoded();
+                byte[] returnedSk = privateKeyParams.getEncoded();
 
-                SABERKEMGenerator SABEREncCipher = new SABERKEMGenerator(random);
-                SecretWithEncapsulation secretEncapsulation = SABEREncCipher.generateEncapsulated(pubParams);
+                SABERKEMGenerator encapsulator = new SABERKEMGenerator(random);
+                SecretWithEncapsulation secretEncapsulation = encapsulator.generateEncapsulated(publicKeyParams);
                 byte[] returnedCt = secretEncapsulation.getEncapsulation();
 
                 byte[] returnedSecret = secretEncapsulation.getSecret();
 
-                SABERKEMExtractor SABERDecCipher = new SABERKEMExtractor(privParams);
+                SABERKEMExtractor decapsulator = new SABERKEMExtractor(privateKeyParams);
 
-                byte[] decapsulatedSecret = SABERDecCipher.extractSecret(returnedCt);
-                byte[] hexEncodedBytes = Hex.encode(decapsulatedSecret);
-                for (int i=0;i<hexEncodedBytes.length;i++){
-                    System.out.print(hexEncodedBytes[i]);
-                }
+                byte[] decapsulatedSecret = decapsulator.extractSecret(returnedCt);
+
                 //ASSERT EQUAL
                 String baseAssertMessage = "TEST FAILED: " + name+ " " + count + ": ";
                 assertTrue(baseAssertMessage+"public key", Arrays.areEqual(expectedPk,returnedPk));

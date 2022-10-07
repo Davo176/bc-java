@@ -82,13 +82,13 @@ public class KyberEncapsulationTest
                 //Generate Random from seed (assume this works correctly)
                 NISTSecureRandom random = new NISTSecureRandom(seed, null);
 
-                KyberPublicKeyParameters pubParams = new KyberPublicKeyParameters(params, pk);
+                KyberPublicKeyParameters publicKeyParams = new KyberPublicKeyParameters(params, pk);
 
-                KyberKEMGenerator KyberEncCipher = new KyberKEMGenerator(random);
-                SecretWithEncapsulation secretWithEnc = KyberEncCipher.generateEncapsulated(pubParams);
-                byte[] returnedCt = secretWithEnc.getEncapsulation();
+                KyberKEMGenerator encapsulator = new KyberKEMGenerator(random);
+                SecretWithEncapsulation encapsulatedSecret = encapsulator.generateEncapsulated(publicKeyParams);
+                byte[] returnedCt = encapsulatedSecret.getEncapsulation();
 
-                byte[] returnedSecret = secretWithEnc.getSecret();
+                byte[] returnedSecret = encapsulatedSecret.getSecret();
 
                 //ASSERT EQUAL
                 String baseAssertMessage = "TEST FAILED: " + name+ " " + count + ": ";

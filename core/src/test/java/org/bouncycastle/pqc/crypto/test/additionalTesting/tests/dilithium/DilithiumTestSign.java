@@ -23,9 +23,9 @@ public class DilithiumTestSign
     {
         //System.out.println("test");
         String[] files = new String[]{
-            "addSignTest_Dilithium2.rsp",
-            "addSignTest_Dilithium3.rsp",
-            "addSignTest_Dilithium5.rsp"
+            "addSignTest_Dilithium2.rsp", 
+            "addSignTest_Dilithium3.rsp", 
+            "addSignTest_Dilithium5.rsp" 
         };
         DilithiumParameters[] parameters = new DilithiumParameters[]{
             DilithiumParameters.dilithium2,
@@ -96,9 +96,8 @@ public class DilithiumTestSign
                 //created my own constructor
                 
                 //Have this working on older commit.
-                DilithiumPrivateKeyParameters skparam = new DilithiumPrivateKeyParameters(params, sk,random);
-                ParametersWithRandom skwrand = new ParametersWithRandom(skparam, random);
-                signer.init(true, skwrand);
+                DilithiumPrivateKeyParameters privateKeyParams = new DilithiumPrivateKeyParameters(params, sk,random);
+                signer.init(true, privateKeyParams);
 
                 byte[] sigGenerated = signer.generateSignature(msg);
                 byte[] attachedSig = Arrays.concatenate(sigGenerated, msg);

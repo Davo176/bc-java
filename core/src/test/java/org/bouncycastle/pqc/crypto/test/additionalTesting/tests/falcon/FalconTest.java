@@ -27,8 +27,8 @@ public class FalconTest
         throws Exception
     {
         String[] files = new String[]{
-            "falcon512-KAT.rsp",
-            "falcon1024-KAT.rsp"
+            "falcon512-Rand.rsp",
+            "falcon1024-Rand.rsp"
         };
         FalconParameters[] parameters = new FalconParameters[]{
             FalconParameters.falcon_512,
@@ -39,7 +39,7 @@ public class FalconTest
         {
             String name = files[fileindex];
             System.out.println("testing: " + name);
-            InputStream src = FalconTest.class.getResourceAsStream("/org/bouncycastle/pqc/crypto/test/falcon/" + name);
+            InputStream src = FalconTest.class.getResourceAsStream("/org/bouncycastle/pqc/crypto/test/additionalTesting/resources/falcon/" + name);
             BufferedReader br = new BufferedReader(new InputStreamReader(src));
             
             String line = null;
@@ -96,17 +96,17 @@ public class FalconTest
 
                 NISTSecureRandom random = new NISTSecureRandom(seed, null);
                 //Get Parameters
-                // keygen
-                FalconKeyGenerationParameters kparam = new FalconKeyGenerationParameters(random, parameters[fileindex]);
-                FalconKeyPairGenerator kpg = new FalconKeyPairGenerator();
-                kpg.init(kparam);
-                AsymmetricCipherKeyPair ackp = kpg.generateKeyPair();
-                byte[] respk = ((FalconPublicKeyParameters)ackp.getPublic()).getH();
-                byte[] ressk = ((FalconPrivateKeyParameters)ackp.getPrivate()).getEncoded();
+                // keyGenerator
+                FalconKeyGenerationParameters generationParams = new FalconKeyGenerationParameters(random, parameters[fileindex]);
+                FalconKeyPairGenerator keyGenerator = new FalconKeyPairGenerator();
+                keyGenerator.init(generationParams);
+                AsymmetricCipherKeyPair keyPair = keyGenerator.generateKeyPair();
+                byte[] respk = ((FalconPublicKeyParameters)keyPair.getPublic()).getH();
+                byte[] ressk = ((FalconPrivateKeyParameters)keyPair.getPrivate()).getEncoded();
 
                 // sign
                 FalconSigner signer = new FalconSigner();              
-                ParametersWithRandom skwrand = new ParametersWithRandom(ackp.getPrivate(), random);
+                ParametersWithRandom skwrand = new ParametersWithRandom(keyPair.getPrivate(), random);
                 signer.init(true, skwrand);
                 byte[] sig = signer.generateSignature(msg);
                 byte[] ressm = new byte[2 + msg.length + sig.length - 1];
@@ -119,8 +119,8 @@ public class FalconTest
  
                 // verify
                 FalconSigner verifier = new FalconSigner();
-                FalconPublicKeyParameters pkparam = (FalconPublicKeyParameters)ackp.getPublic();
-                verifier.init(false, pkparam);
+                FalconPublicKeyParameters pgenerationParams = (FalconPublicKeyParameters)keyPair.getPublic();
+                verifier.init(false, pgenerationParams);
                 //huhhh surely this should all be abstracted
                 byte[] noncesig = new byte[expectedSm_len - m_len - 2 + 1];
                 noncesig[0] = (byte)(0x30 + parameters[fileindex].getLogN());
@@ -130,7 +130,7 @@ public class FalconTest
                 boolean isValid = verifier.verifySignature(msg, noncesig);
 
                 // AssertTrue
-                //keygen
+                //keyGenerator
                 assertTrue(name + " " + count + " public key", Arrays.areEqual(respk, 0, respk.length, expectedPk, 1, expectedPk.length));
                 assertTrue(name + " " + count + " public key", Arrays.areEqual(ressk, 0, ressk.length, expectedSk, 1, expectedSk.length));
                 //sign

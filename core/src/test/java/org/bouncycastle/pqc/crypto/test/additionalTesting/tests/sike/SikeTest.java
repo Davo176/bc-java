@@ -1,17 +1,14 @@
 package org.bouncycastle.pqc.crypto.test.additionalTesting.tests.sike;
 
-//Import dependencies
 import junit.framework.TestCase;
 import java.io.*;
 
-//Dependencies Written by Bouncy Castle
 import org.bouncycastle.util.encoders.Hex;
+import org.bouncycastle.util.Arrays;
 import org.bouncycastle.pqc.crypto.test.NISTSecureRandom;
-
 import org.bouncycastle.crypto.AsymmetricCipherKeyPair;
 import org.bouncycastle.crypto.SecretWithEncapsulation;
-import org.bouncycastle.util.Arrays;
-//Asset Under Test
+
 import org.bouncycastle.pqc.crypto.sike.SIKEKEMExtractor;
 import org.bouncycastle.pqc.crypto.sike.SIKEKEMGenerator;
 import org.bouncycastle.pqc.crypto.sike.SIKEKeyGenerationParameters;
@@ -20,22 +17,16 @@ import org.bouncycastle.pqc.crypto.sike.SIKEParameters;
 import org.bouncycastle.pqc.crypto.sike.SIKEPrivateKeyParameters;
 import org.bouncycastle.pqc.crypto.sike.SIKEPublicKeyParameters;
 
-public class SikeTest
-    extends TestCase
-{
+public class SikeTest extends TestCase {
     public void testSikeVectors() 
         throws Exception
     {
         String[] files;
         files = new String[]{
-            "PQCkemKAT_374.rsp",
-            "PQCkemKAT_434.rsp",
-            "PQCkemKAT_524.rsp",
-            "PQCkemKAT_644.rsp",
-            "PQCkemKAT_350.rsp",
-            "PQCkemKAT_407.rsp",
-            "PQCkemKAT_491.rsp",
-            "PQCkemKAT_602.rsp",
+            "addRandTest_434.rsp",
+            "addRandTest_503.rsp",
+            "addRandTest_610.rsp",
+            "addRandTest_751.rsp",
         };
 
         SIKEParameters[] paramList = {
@@ -43,17 +34,13 @@ public class SikeTest
             SIKEParameters.sikep503,
             SIKEParameters.sikep610,
             SIKEParameters.sikep751,
-            SIKEParameters.sikep434_compressed,
-            SIKEParameters.sikep503_compressed,
-            SIKEParameters.sikep610_compressed,
-            SIKEParameters.sikep751_compressed,
         };
 
         for (int fileIndex = 0; fileIndex < files.length; fileIndex++)
         {
             String name = files[fileIndex];
             System.out.println("testing: " + name);
-            InputStream src = SikeTest.class.getResourceAsStream("/org/bouncycastle/pqc/crypto/test/sike/" + name);
+            InputStream src = SikeTest.class.getResourceAsStream("/org/bouncycastle/pqc/crypto/test/additionalTesting/resources/sike/addRandTest/" + name);
             BufferedReader br = new BufferedReader(new InputStreamReader(src));
 
             String line = null;
@@ -102,25 +89,25 @@ public class SikeTest
                 //Generate Random from seed (assume this works correctly)
                 NISTSecureRandom random = new NISTSecureRandom(seed, null);
 
-                SIKEKeyPairGenerator keygen = new SIKEKeyPairGenerator();
-                SIKEKeyGenerationParameters keygenParams = new SIKEKeyGenerationParameters(random, parameters);
+                SIKEKeyPairGenerator keyGenerator = new SIKEKeyPairGenerator();
+                SIKEKeyGenerationParameters generationParams = new SIKEKeyGenerationParameters(random, parameters);
                 
-                keygen.init(keygenParams);
-                AsymmetricCipherKeyPair keyPair = keygen.generateKeyPair();
+                keyGenerator.init(generationParams);
+                AsymmetricCipherKeyPair keyPair = keyGenerator.generateKeyPair();
 
-                SIKEPublicKeyParameters pubParams = (SIKEPublicKeyParameters)keyPair.getPublic();
-                SIKEPrivateKeyParameters privParams = (SIKEPrivateKeyParameters)keyPair.getPrivate();
+                SIKEPublicKeyParameters publicKeyParams = (SIKEPublicKeyParameters)keyPair.getPublic();
+                SIKEPrivateKeyParameters privateKeyParams = (SIKEPrivateKeyParameters)keyPair.getPrivate();
 
-                byte[] returnedPk = pubParams.getEncoded();
-                byte[] returnedSk = privParams.getEncoded();
+                byte[] returnedPk = publicKeyParams.getEncoded();
+                byte[] returnedSk = privateKeyParams.getEncoded();
 
-                SIKEKEMGenerator SikeGenerator = new SIKEKEMGenerator(random);
-                SecretWithEncapsulation secretWithEnc = SikeGenerator.generateEncapsulated(pubParams);
-                byte[] returnedCt = secretWithEnc.getEncapsulation();
-                byte[] returnedSecret = secretWithEnc.getSecret();
+                SIKEKEMGenerator encapsulator = new SIKEKEMGenerator(random);
+                SecretWithEncapsulation encapsulatedSecret = encapsulator.generateEncapsulated(publicKeyParams);
+                byte[] returnedCt = encapsulatedSecret.getEncapsulation();
+                byte[] returnedSecret = encapsulatedSecret.getSecret();
 
-                SIKEKEMExtractor SikeExtractor = new SIKEKEMExtractor(privParams);
-                byte[] decapsulatedSecret = SikeExtractor.extractSecret(returnedCt);
+                SIKEKEMExtractor decapsulator = new SIKEKEMExtractor(privateKeyParams);
+                byte[] decapsulatedSecret = decapsulator.extractSecret(returnedCt);
 
                 //ASSERT EQUAL
                 String baseAssertMessage = "TEST FAILED: " + name+ " " + count + ": ";
@@ -135,5 +122,7 @@ public class SikeTest
                 System.out.println("All Passed");
             }
         }
+
+        System.out.println("test");
     }
 }

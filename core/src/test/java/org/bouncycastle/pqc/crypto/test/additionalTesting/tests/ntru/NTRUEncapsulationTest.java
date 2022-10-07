@@ -85,13 +85,13 @@ public class NTRUEncapsulationTest
                 NISTSecureRandom random = new NISTSecureRandom(seed, null);
 
 
-                NTRUPublicKeyParameters pkParams = new NTRUPublicKeyParameters(params, pk);
+                NTRUPublicKeyParameters pgenerationParamss = new NTRUPublicKeyParameters(params, pk);
 
                 NTRUKEMGenerator encapsulator = new NTRUKEMGenerator(random);
-                SecretWithEncapsulation encapsulation = encapsulator.generateEncapsulated(pkParams);
-                byte[] returnedCt = encapsulation.getEncapsulation();
+                SecretWithEncapsulation encapsulatedSecret = encapsulator.generateEncapsulated(pgenerationParamss);
+                byte[] returnedCt = encapsulatedSecret.getEncapsulation();
 
-                byte[] returnedSecret = encapsulation.getSecret();
+                byte[] returnedSecret = encapsulatedSecret.getSecret();
 
                 //ASSERT EQUAL
                 String baseAssertMessage = "TEST FAILED: " + name+ " " + count + ": ";

@@ -6,19 +6,11 @@ import java.io.*;
 
 //Dependencies Written by Bouncy Castle
 import org.bouncycastle.util.encoders.Hex;
-import org.bouncycastle.pqc.crypto.test.NISTSecureRandom;
-
-import org.bouncycastle.crypto.AsymmetricCipherKeyPair;
-import org.bouncycastle.crypto.SecretWithEncapsulation;
 import org.bouncycastle.util.Arrays;
 //Asset Under Test
 import org.bouncycastle.pqc.crypto.ntruprime.NTRULPRimeKEMExtractor;
-import org.bouncycastle.pqc.crypto.ntruprime.NTRULPRimeKEMGenerator;
-import org.bouncycastle.pqc.crypto.ntruprime.NTRULPRimeKeyGenerationParameters;
-import org.bouncycastle.pqc.crypto.ntruprime.NTRULPRimeKeyPairGenerator;
 import org.bouncycastle.pqc.crypto.ntruprime.NTRULPRimeParameters;
 import org.bouncycastle.pqc.crypto.ntruprime.NTRULPRimePrivateKeyParameters;
-import org.bouncycastle.pqc.crypto.ntruprime.NTRULPRimePublicKeyParameters;
 
 public class NtruLPRimeDecapTest
     extends TestCase
@@ -28,22 +20,22 @@ public class NtruLPRimeDecapTest
     {
         String[] files;
         files = new String[]{
-            "addDecap653.rsp",
-            "addDecap761.rsp",
-            "addDecap857.rsp",
-            "addDecap953.rsp",
-            "addDecap1013.rsp",
-            "addDecap1277.rsp",
+            "addDecap653.rsp", //fail
+            "addDecap761.rsp", //fail
+            "addDecap857.rsp", //fail
+            "addDecap953.rsp", //fail
+            "addDecap1013.rsp", //fail
+            "addDecap1277.rsp", //fail
         };
 
         NTRULPRimeParameters[] paramList = new NTRULPRimeParameters[]
         {
-                NTRULPRimeParameters.ntrulpr653,
-                NTRULPRimeParameters.ntrulpr761,
-                NTRULPRimeParameters.ntrulpr857,
-                NTRULPRimeParameters.ntrulpr953,
-                NTRULPRimeParameters.ntrulpr1013,
-                NTRULPRimeParameters.ntrulpr1277
+            NTRULPRimeParameters.ntrulpr653,
+            NTRULPRimeParameters.ntrulpr761,
+            NTRULPRimeParameters.ntrulpr857,
+            NTRULPRimeParameters.ntrulpr953,
+            NTRULPRimeParameters.ntrulpr1013,
+            NTRULPRimeParameters.ntrulpr1277
         };
 
         for (int fileIndex = 0; fileIndex < files.length; fileIndex++)
@@ -93,16 +85,14 @@ public class NtruLPRimeDecapTest
 
                 //Get Parameters
                 NTRULPRimeParameters params = paramList[fileIndex];
-                //Generate Random from seed (assume this works correctly)
-                NISTSecureRandom random = new NISTSecureRandom(seed, null);
                 
                 //Calculate Values
                 //Generate Key Pairs
-                NTRULPRimePrivateKeyParameters privParams = new NTRULPRimePrivateKeyParameters(params,sk);
+                NTRULPRimePrivateKeyParameters privateKeyParams = new NTRULPRimePrivateKeyParameters(params,sk);
 
 
-                NTRULPRimeKEMExtractor kemExtractor = new NTRULPRimeKEMExtractor(privParams);
-                byte[] decapsulatedSecret = kemExtractor.extractSecret(expectedCt);
+                NTRULPRimeKEMExtractor decapsulator = new NTRULPRimeKEMExtractor(privateKeyParams);
+                byte[] decapsulatedSecret = decapsulator.extractSecret(expectedCt);
 
 
                 //ASSERT EQUAL

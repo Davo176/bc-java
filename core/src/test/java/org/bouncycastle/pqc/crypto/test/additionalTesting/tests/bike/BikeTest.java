@@ -28,9 +28,9 @@ public class BikeTest
     {
         String[] files;
         files = new String[]{
-            "PQCkemKAT_BIKE_3114.rsp",
-            "PQCkemKAT_BIKE_6198.rsp",
-            "PQCkemKAT_BIKE_10276.rsp"
+            "addRand_3114.rsp",
+            "addRand_6198.rsp",
+            "addRand_10276.rsp"
         };
 
         BIKEParameters[] paramList = {
@@ -43,7 +43,7 @@ public class BikeTest
         {
             String name = files[fileIndex];
             System.out.println("testing: " + name);
-            InputStream src = BikeTest.class.getResourceAsStream("/org/bouncycastle/pqc/crypto/test/bike/" + name);
+            InputStream src = BikeTest.class.getResourceAsStream("/org/bouncycastle/pqc/crypto/test/additionalTesting/resources/bike/" + name);
             BufferedReader br = new BufferedReader(new InputStreamReader(src));
 
             String line = null;
@@ -92,25 +92,25 @@ public class BikeTest
                 //Generate Random from seed (assume this works correctly)
                 NISTSecureRandom random = new NISTSecureRandom(seed, null);
 
-                BIKEKeyPairGenerator keygen = new BIKEKeyPairGenerator();
-                BIKEKeyGenerationParameters keygenParams = new BIKEKeyGenerationParameters(random, parameters);
+                BIKEKeyPairGenerator keyGenerator = new BIKEKeyPairGenerator();
+                BIKEKeyGenerationParameters generationParams = new BIKEKeyGenerationParameters(random, parameters);
                 
-                keygen.init(keygenParams);
-                AsymmetricCipherKeyPair keyPair = keygen.generateKeyPair();
+                keyGenerator.init(generationParams);
+                AsymmetricCipherKeyPair keyPair = keyGenerator.generateKeyPair();
 
-                BIKEPublicKeyParameters pubParams = (BIKEPublicKeyParameters)keyPair.getPublic();
-                BIKEPrivateKeyParameters privParams = (BIKEPrivateKeyParameters)keyPair.getPrivate();
+                BIKEPublicKeyParameters publicKeyParams = (BIKEPublicKeyParameters)keyPair.getPublic();
+                BIKEPrivateKeyParameters privateKeyParams = (BIKEPrivateKeyParameters)keyPair.getPrivate();
 
-                byte[] returnedPk = pubParams.getEncoded();
-                byte[] returnedSk = privParams.getEncoded();
+                byte[] returnedPk = publicKeyParams.getEncoded();
+                byte[] returnedSk = privateKeyParams.getEncoded();
 
-                BIKEKEMGenerator bikekemGenerator = new BIKEKEMGenerator(random);
-                SecretWithEncapsulation secretWithEnc = bikekemGenerator.generateEncapsulated(pubParams);
-                byte[] returnedCt = secretWithEnc.getEncapsulation();
-                byte[] returnedSecret = secretWithEnc.getSecret();
+                BIKEKEMGenerator encapsulator = new BIKEKEMGenerator(random);
+                SecretWithEncapsulation encapsulatedSecret = encapsulator.generateEncapsulated(publicKeyParams);
+                byte[] returnedCt = encapsulatedSecret.getEncapsulation();
+                byte[] returnedSecret = encapsulatedSecret.getSecret();
 
-                BIKEKEMExtractor bikekemExtractor = new BIKEKEMExtractor(privParams);
-                byte[] decapsulatedSecret = bikekemExtractor.extractSecret(returnedCt);
+                BIKEKEMExtractor decapsulator = new BIKEKEMExtractor(privateKeyParams);
+                byte[] decapsulatedSecret = decapsulator.extractSecret(returnedCt);
 
                 //ASSERT EQUAL
                 String baseAssertMessage = "TEST FAILED: " + name+ " " + count + ": ";

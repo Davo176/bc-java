@@ -8,17 +8,11 @@ import java.io.*;
 import org.bouncycastle.util.encoders.Hex;
 import org.bouncycastle.pqc.crypto.test.NISTSecureRandom;
 
-import org.bouncycastle.crypto.AsymmetricCipherKeyPair;
-import org.bouncycastle.crypto.SecretWithEncapsulation;
 import org.bouncycastle.util.Arrays;
 //Asset Under Test
 import org.bouncycastle.pqc.crypto.saber.SABERKEMExtractor;
-import org.bouncycastle.pqc.crypto.saber.SABERKEMGenerator;
-import org.bouncycastle.pqc.crypto.saber.SABERKeyGenerationParameters;
-import org.bouncycastle.pqc.crypto.saber.SABERKeyPairGenerator;
 import org.bouncycastle.pqc.crypto.saber.SABERParameters;
 import org.bouncycastle.pqc.crypto.saber.SABERPrivateKeyParameters;
-import org.bouncycastle.pqc.crypto.saber.SABERPublicKeyParameters;
 
 public class SaberDecapsulationTest
     extends TestCase
@@ -28,13 +22,13 @@ public class SaberDecapsulationTest
     {
         String[] files;
         files = new String[]{
-            //"additionalDecapTesting1568.rsp",
-            "additionalDecapTesting2304.rsp",
-            "additionalDecapTesting3040.rsp"
+            "additionalDecapTesting1568.rsp", //fail
+            "additionalDecapTesting2304.rsp", //fail
+            "additionalDecapTesting3040.rsp" //fail
         };
 
         SABERParameters[] paramList = new SABERParameters[] {
-            //SABERParameters.lightsaberkem256r3,
+            SABERParameters.lightsaberkem256r3,
             SABERParameters.saberkem256r3,
             SABERParameters.firesaberkem256r3,
         };
@@ -84,12 +78,12 @@ public class SaberDecapsulationTest
 
                 //Get Parameters
                 SABERParameters params = paramList[fileIndex];
-                //Generate Random from seed (assume this works correctly) not needed
-                NISTSecureRandom random = new NISTSecureRandom(seed, null);
                 
-                SABERPrivateKeyParameters privParams = new SABERPrivateKeyParameters(params, sk);
-                SABERKEMExtractor SABERDecCipher = new SABERKEMExtractor(privParams);
-                byte[] decapsulatedSecret = SABERDecCipher.extractSecret(ct);
+                SABERPrivateKeyParameters privateKeyParams = new SABERPrivateKeyParameters(params, sk);
+
+                SABERKEMExtractor decapsulator = new SABERKEMExtractor(privateKeyParams);
+                
+                byte[] decapsulatedSecret = decapsulator.extractSecret(ct);
                 //ASSERT EQUAL
                 String baseAssertMessage = "TEST FAILED: " + name+ " " + count + ": ";
                 //by equality axiom, if these two are equal, returned = decapsulated

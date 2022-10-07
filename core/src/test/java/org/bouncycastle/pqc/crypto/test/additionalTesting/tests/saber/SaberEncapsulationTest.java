@@ -8,16 +8,11 @@ import java.io.*;
 import org.bouncycastle.util.encoders.Hex;
 import org.bouncycastle.pqc.crypto.test.NISTSecureRandom;
 
-import org.bouncycastle.crypto.AsymmetricCipherKeyPair;
 import org.bouncycastle.crypto.SecretWithEncapsulation;
 import org.bouncycastle.util.Arrays;
 //Asset Under Test
-import org.bouncycastle.pqc.crypto.saber.SABERKEMExtractor;
 import org.bouncycastle.pqc.crypto.saber.SABERKEMGenerator;
-import org.bouncycastle.pqc.crypto.saber.SABERKeyGenerationParameters;
-import org.bouncycastle.pqc.crypto.saber.SABERKeyPairGenerator;
 import org.bouncycastle.pqc.crypto.saber.SABERParameters;
-import org.bouncycastle.pqc.crypto.saber.SABERPrivateKeyParameters;
 import org.bouncycastle.pqc.crypto.saber.SABERPublicKeyParameters;
 
 public class SaberEncapsulationTest
@@ -87,10 +82,10 @@ public class SaberEncapsulationTest
                 //Generate Random from seed (assume this works correctly)
                 NISTSecureRandom random = new NISTSecureRandom(seed, null);
                 
-                SABERPublicKeyParameters pubParams = new SABERPublicKeyParameters(params, pk);
+                SABERPublicKeyParameters publicKeyParams = new SABERPublicKeyParameters(params, pk);
 
-                SABERKEMGenerator SABEREncCipher = new SABERKEMGenerator(random);
-                SecretWithEncapsulation secretEncapsulation = SABEREncCipher.generateEncapsulated(pubParams);
+                SABERKEMGenerator encapsulator = new SABERKEMGenerator(random);
+                SecretWithEncapsulation secretEncapsulation = encapsulator.generateEncapsulated(publicKeyParams);
                 byte[] returnedCt = secretEncapsulation.getEncapsulation();
 
                 byte[] returnedSecret = secretEncapsulation.getSecret();
@@ -100,7 +95,6 @@ public class SaberEncapsulationTest
                 
                 assertTrue(baseAssertMessage+"cipher text", Arrays.areEqual(expectedCt,returnedCt));
 
-                //by equality axiom, if these two are equal, returned = decapsulated
                 assertTrue(baseAssertMessage+"shared secret from party 1", Arrays.areEqual(expectedSs,returnedSecret));
                 System.out.println("All Passed");
             }

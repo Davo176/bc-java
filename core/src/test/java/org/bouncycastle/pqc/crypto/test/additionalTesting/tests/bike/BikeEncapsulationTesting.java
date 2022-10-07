@@ -23,9 +23,9 @@ public class BikeEncapsulationTesting
     {
         String[] files;
         files = new String[]{
-            "additionalEncap3114.rsp",
-            "additionalEncap6198.rsp",
-            "additionalEncap10276.rsp",
+            "additionalEncap3114.rsp", //fail
+            "additionalEncap6198.rsp", //fail
+            "additionalEncap10276.rsp", //fail
         };
 
         BIKEParameters[] paramList = {
@@ -82,18 +82,13 @@ public class BikeEncapsulationTesting
                 //Generate Random from seed (assume this works correctly)
                 NISTSecureRandom random = new NISTSecureRandom(seed, null);
 
-                BIKEPublicKeyParameters pubParams = new BIKEPublicKeyParameters(params, pk);
+                BIKEPublicKeyParameters publicKeyParams = new BIKEPublicKeyParameters(params, pk);
 
 
-                BIKEKEMGenerator bikekemGenerator = new BIKEKEMGenerator(random);
-                SecretWithEncapsulation secretWithEnc = bikekemGenerator.generateEncapsulated(pubParams);
-                byte[] returnedCt = secretWithEnc.getEncapsulation();
-                byte[] returnedSecret = secretWithEnc.getSecret();
-                //CODE FOR PRINTING HEX VALUE OF BYTE ARRAY
-                // byte[] hexCt = Hex.encode(returnedCt);
-                // String test = new String(hexCt);
-                // System.out.println(test);
-
+                BIKEKEMGenerator encapsulator = new BIKEKEMGenerator(random);
+                SecretWithEncapsulation encapsulatedSecret = encapsulator.generateEncapsulated(publicKeyParams);
+                byte[] returnedCt = encapsulatedSecret.getEncapsulation();
+                byte[] returnedSecret = encapsulatedSecret.getSecret();
 
                 //ASSERT EQUAL
                 String baseAssertMessage = "TEST FAILED: " + name+ " " + count + ": ";

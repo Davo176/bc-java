@@ -78,13 +78,11 @@ public class KyberDecapsulationTest
 
                 //Get Parameters
                 KyberParameters params = paramList[fileIndex];
-                //Generate Random from seed (assume this works correctly)
-                //NISTSecureRandom random = new NISTSecureRandom(seed, null);
 
-                KyberPrivateKeyParameters privParams = new KyberPrivateKeyParameters(params, sk);
+                KyberPrivateKeyParameters privateKeyParams = new KyberPrivateKeyParameters(params, sk);
 
-                KyberKEMExtractor KyberDecCipher = new KyberKEMExtractor(privParams);
-                byte[] decapsulatedSecret = KyberDecCipher.extractSecret(ct);
+                KyberKEMExtractor decapsulator = new KyberKEMExtractor(privateKeyParams);
+                byte[] decapsulatedSecret = decapsulator.extractSecret(ct);
 
                 //ASSERT EQUAL
                 String baseAssertMessage = "TEST FAILED: " + name+ " " + count + ": ";

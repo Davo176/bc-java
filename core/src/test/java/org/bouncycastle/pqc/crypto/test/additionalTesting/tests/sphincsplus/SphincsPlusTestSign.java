@@ -3,16 +3,11 @@ package org.bouncycastle.pqc.crypto.test.additionalTesting.tests.sphincsplus;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.security.SecureRandom;
 
 import junit.framework.TestCase;
-import org.bouncycastle.crypto.AsymmetricCipherKeyPair;
 import org.bouncycastle.crypto.params.ParametersWithRandom;
-import org.bouncycastle.pqc.crypto.sphincsplus.SPHINCSPlusKeyGenerationParameters;
-import org.bouncycastle.pqc.crypto.sphincsplus.SPHINCSPlusKeyPairGenerator;
 import org.bouncycastle.pqc.crypto.sphincsplus.SPHINCSPlusParameters;
 import org.bouncycastle.pqc.crypto.sphincsplus.SPHINCSPlusPrivateKeyParameters;
-import org.bouncycastle.pqc.crypto.sphincsplus.SPHINCSPlusPublicKeyParameters;
 import org.bouncycastle.pqc.crypto.sphincsplus.SPHINCSPlusSigner;
 import org.bouncycastle.util.Arrays;
 import org.bouncycastle.util.encoders.Hex;
@@ -160,11 +155,11 @@ public class SphincsPlusTestSign extends TestCase
                 // Signature test
                 //
 
-                SPHINCSPlusPrivateKeyParameters privParams = new SPHINCSPlusPrivateKeyParameters(parameters,sk);
+                SPHINCSPlusPrivateKeyParameters privateKeyParams = new SPHINCSPlusPrivateKeyParameters(parameters,sk);
 
                 SPHINCSPlusSigner signer = new SPHINCSPlusSigner();
 
-                signer.init(true, new ParametersWithRandom(privParams, new FixedSecureRandom(optrand)));
+                signer.init(true, new ParametersWithRandom(privateKeyParams, new FixedSecureRandom(optrand)));
 
                 byte[] sigGenerated = signer.generateSignature(msg);
                 byte[] attachedSig = Arrays.concatenate(sigGenerated, msg);

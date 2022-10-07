@@ -29,11 +29,11 @@ extends TestCase
         String[] files;
         files = new String[]{
             "addEncap653.rsp",
-            "addEncap761.rsp",
-            "addEncap857.rsp",
-            "addEncap953.rsp",
-            "addEncap1013.rsp",
-            "addEncap1277.rsp",
+            "addEncap761.rsp", //fail
+            "addEncap857.rsp", //fail
+            "addEncap953.rsp", //fail
+            "addEncap1013.rsp", //fail
+            "addEncap1277.rsp", //fail
         };
 
         SNTRUPrimeParameters[] paramList = new SNTRUPrimeParameters[]
@@ -96,8 +96,8 @@ extends TestCase
 
                 SNTRUPrimePublicKeyParameters pubParam = new SNTRUPrimePublicKeyParameters(params, pk);
 
-                SNTRUPrimeKEMGenerator kemGenerator = new SNTRUPrimeKEMGenerator(random);
-                SecretWithEncapsulation secretEncapsulation = kemGenerator.generateEncapsulated(pubParam);
+                SNTRUPrimeKEMGenerator encapsulator = new SNTRUPrimeKEMGenerator(random);
+                SecretWithEncapsulation secretEncapsulation = encapsulator.generateEncapsulated(pubParam);
                 byte[] returnedCt = secretEncapsulation.getEncapsulation();
                 byte[] returnedSecret = secretEncapsulation.getSecret();
 
@@ -105,6 +105,7 @@ extends TestCase
                 //ASSERT EQUAL
                 String baseAssertMessage = "TEST FAILED: " + name+ " " + count + ": ";                
                 assertTrue(baseAssertMessage+"cipher text", Arrays.areEqual(expectedCt,returnedCt));
+                assertTrue(baseAssertMessage+"shared secret from party 1", Arrays.areEqual(expectedSs,0,params.getSessionKeySize()/8,returnedSecret,0,params.getSessionKeySize()/8));
 
                 System.out.println("All Passed");
             }

@@ -80,11 +80,9 @@ public class NTRUDecapsulationTest
 
                 //Get Parameters
                 NTRUParameters params = paramList[fileIndex];
-                //Generate Random from seed (assume this works correctly) - not needed
-                NISTSecureRandom random = new NISTSecureRandom(seed, null);
 
-                NTRUPrivateKeyParameters skParam = new NTRUPrivateKeyParameters(params, sk);
-                NTRUKEMExtractor decapsulator = new NTRUKEMExtractor(skParam);
+                NTRUPrivateKeyParameters privateKeyParams = new NTRUPrivateKeyParameters(params, sk);
+                NTRUKEMExtractor decapsulator = new NTRUKEMExtractor(privateKeyParams);
                 byte[] decapsulatedSecret = decapsulator.extractSecret(ct);
 
                 //ASSERT EQUAL

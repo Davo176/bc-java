@@ -28,12 +28,12 @@ extends TestCase
     {
         String[] files;
         files = new String[]{
-            "sntrup653.rsp",
-            "sntrup761.rsp",
-            "sntrup857.rsp",
-            "sntrup953.rsp",
-            "sntrup1013.rsp",
-            "sntrup1277.rsp",
+            "addRand653.rsp",
+            "addRand761.rsp",
+            "addRand857.rsp",
+            "addRand953.rsp",
+            "addRand1013.rsp",
+            "addRand1277.rsp",
         };
 
         SNTRUPrimeParameters[] paramList = new SNTRUPrimeParameters[]
@@ -50,7 +50,7 @@ extends TestCase
         {
             String name = files[fileIndex];
             System.out.println("testing: " + name);
-            InputStream src = NtruLPRimeTest.class.getResourceAsStream("/org/bouncycastle/pqc/crypto/test/ntruprime/sntrup/" + name);
+            InputStream src = SNtruPrimeTest.class.getResourceAsStream("/org/bouncycastle/pqc/crypto/test/additionalTesting/resources/ntruprime/addRand/sntru/" + name);
             BufferedReader br = new BufferedReader(new InputStreamReader(src));
 
             // Condition holds true till
@@ -107,14 +107,14 @@ extends TestCase
                 byte[] returnedPk = ((SNTRUPrimePublicKeyParameters)keyPair.getPublic()).getEncoded();
                 byte[] returnedSk = ((SNTRUPrimePrivateKeyParameters)keyPair.getPrivate()).getEncoded();
 
-                SNTRUPrimeKEMGenerator kemGenerator = new SNTRUPrimeKEMGenerator(random);
-                SecretWithEncapsulation secretEncapsulation = kemGenerator.generateEncapsulated(keyPair.getPublic());
+                SNTRUPrimeKEMGenerator encapsulator = new SNTRUPrimeKEMGenerator(random);
+                SecretWithEncapsulation secretEncapsulation = encapsulator.generateEncapsulated(keyPair.getPublic());
                 byte[] returnedCt = secretEncapsulation.getEncapsulation();
                 byte[] returnedSecret = secretEncapsulation.getSecret();
 
 
-                SNTRUPrimeKEMExtractor kemExtractor = new SNTRUPrimeKEMExtractor((SNTRUPrimePrivateKeyParameters)keyPair.getPrivate());
-                byte[] decapsulatedSecret = kemExtractor.extractSecret(secretEncapsulation.getEncapsulation());
+                SNTRUPrimeKEMExtractor decapsulator = new SNTRUPrimeKEMExtractor((SNTRUPrimePrivateKeyParameters)keyPair.getPrivate());
+                byte[] decapsulatedSecret = decapsulator.extractSecret(secretEncapsulation.getEncapsulation());
 
 
                 //ASSERT EQUAL

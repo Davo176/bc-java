@@ -31,12 +31,18 @@ public class FrodoTest
             "addRandTest_19888.rsp",
             "addRandTest_31296.rsp",
             "addRandTest_43088.rsp",
+            "addRandTest_shake_19888.rsp",
+            "addRandTest_shake_31296.rsp",
+            "addRandTest_shake_43088.rsp",
         };
 
         FrodoParameters[] paramList = {
             FrodoParameters.frodokem640aes,
             FrodoParameters.frodokem976aes,
             FrodoParameters.frodokem1344aes,
+            FrodoParameters.frodokem640shake,
+            FrodoParameters.frodokem976shake,
+            FrodoParameters.frodokem1344shake,
         };
 
         for (int fileIndex = 0; fileIndex < files.length; fileIndex++)
@@ -92,25 +98,25 @@ public class FrodoTest
                 //Generate Random from seed (assume this works correctly)
                 NISTSecureRandom random = new NISTSecureRandom(seed, null);
 
-                FrodoKeyPairGenerator keygen = new FrodoKeyPairGenerator();
-                FrodoKeyGenerationParameters keygenParams = new FrodoKeyGenerationParameters(random, parameters);
+                FrodoKeyPairGenerator keyGenerator = new FrodoKeyPairGenerator();
+                FrodoKeyGenerationParameters generationParams = new FrodoKeyGenerationParameters(random, parameters);
                 
-                keygen.init(keygenParams);
-                AsymmetricCipherKeyPair keyPair = keygen.generateKeyPair();
+                keyGenerator.init(generationParams);
+                AsymmetricCipherKeyPair keyPair = keyGenerator.generateKeyPair();
 
-                FrodoPublicKeyParameters pubParams = (FrodoPublicKeyParameters)keyPair.getPublic();
-                FrodoPrivateKeyParameters privParams = (FrodoPrivateKeyParameters)keyPair.getPrivate();
+                FrodoPublicKeyParameters publicKeyParams = (FrodoPublicKeyParameters)keyPair.getPublic();
+                FrodoPrivateKeyParameters privateKeyParams = (FrodoPrivateKeyParameters)keyPair.getPrivate();
 
-                byte[] returnedPk = pubParams.getEncoded();
-                byte[] returnedSk = privParams.getEncoded();
+                byte[] returnedPk = publicKeyParams.getEncoded();
+                byte[] returnedSk = privateKeyParams.getEncoded();
 
-                FrodoKEMGenerator frodokemGenerator = new FrodoKEMGenerator(random);
-                SecretWithEncapsulation secretWithEnc = frodokemGenerator.generateEncapsulated(pubParams);
-                byte[] returnedCt = secretWithEnc.getEncapsulation();
-                byte[] returnedSecret = secretWithEnc.getSecret();
+                FrodoKEMGenerator encapsulator = new FrodoKEMGenerator(random);
+                SecretWithEncapsulation encapsulatedSecret = encapsulator.generateEncapsulated(publicKeyParams);
+                byte[] returnedCt = encapsulatedSecret.getEncapsulation();
+                byte[] returnedSecret = encapsulatedSecret.getSecret();
 
-                FrodoKEMExtractor frodokemExtractor = new FrodoKEMExtractor(privParams);
-                byte[] decapsulatedSecret = frodokemExtractor.extractSecret(returnedCt);
+                FrodoKEMExtractor decapsulator = new FrodoKEMExtractor(privateKeyParams);
+                byte[] decapsulatedSecret = decapsulator.extractSecret(returnedCt);
 
                 //ASSERT EQUAL
                 String baseAssertMessage = "TEST FAILED: " + name+ " " + count + ": ";

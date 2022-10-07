@@ -28,12 +28,12 @@ public class NtruLPRimeTest
     {
         String[] files;
         files = new String[]{
-            "ntrulpr653.rsp",
-            "ntrulpr761.rsp",
-            "ntrulpr857.rsp",
-            "ntrulpr953.rsp",
-            "ntrulpr1013.rsp",
-            "ntrulpr1277.rsp",
+            "addRand653.rsp",
+            "addRand761.rsp",
+            "addRand857.rsp",
+            "addRand953.rsp",
+            "addRand1013.rsp",
+            "addRand1277.rsp", 
         };
 
         NTRULPRimeParameters[] paramList = new NTRULPRimeParameters[]
@@ -50,7 +50,7 @@ public class NtruLPRimeTest
         {
             String name = files[fileIndex];
             System.out.println("testing: " + name);
-            InputStream src = NtruLPRimeTest.class.getResourceAsStream("/org/bouncycastle/pqc/crypto/test/ntruprime/ntrulpr/" + name);
+            InputStream src = NtruLPRimeTest.class.getResourceAsStream("/org/bouncycastle/pqc/crypto/test/additionalTesting/resources/ntruprime/addRand/ntrulpr/" + name);
             BufferedReader br = new BufferedReader(new InputStreamReader(src));
 
             // Condition holds true till
@@ -109,15 +109,15 @@ public class NtruLPRimeTest
                 byte[] returnedPk = ((NTRULPRimePublicKeyParameters)keyPair.getPublic()).getEncoded();
                 byte[] returnedSk = ((NTRULPRimePrivateKeyParameters)keyPair.getPrivate()).getEncoded();
 
-                NTRULPRimeKEMGenerator kemGenerator = new NTRULPRimeKEMGenerator(random);
-                SecretWithEncapsulation secretEncapsulation = kemGenerator.generateEncapsulated(keyPair.getPublic());
+                NTRULPRimeKEMGenerator encapsulator = new NTRULPRimeKEMGenerator(random);
+                SecretWithEncapsulation secretEncapsulation = encapsulator.generateEncapsulated(keyPair.getPublic());
                 byte[] returnedCt = secretEncapsulation.getEncapsulation();
 
                 byte[] returnedSecret = secretEncapsulation.getSecret();
 
 
-                NTRULPRimeKEMExtractor kemExtractor = new NTRULPRimeKEMExtractor(new NTRULPRimePrivateKeyParameters(params,expectedSk));
-                byte[] decapsulatedSecret = kemExtractor.extractSecret(returnedCt);
+                NTRULPRimeKEMExtractor decapsulator = new NTRULPRimeKEMExtractor(new NTRULPRimePrivateKeyParameters(params,expectedSk));
+                byte[] decapsulatedSecret = decapsulator.extractSecret(returnedCt);
 
 
                 //ASSERT EQUAL

@@ -94,20 +94,19 @@ public class NTRUTest
                 //Generate Random from seed (assume this works correctly)
                 NISTSecureRandom random = new NISTSecureRandom(seed, null);
 
-                NTRUKeyGenerationParameters keygenParams = new NTRUKeyGenerationParameters(random, params);
-                NTRUKeyPairGenerator keygen = new NTRUKeyPairGenerator();
-                keygen.init(keygenParams);
-                AsymmetricCipherKeyPair keyPair = keygen.generateKeyPair();
+                NTRUKeyGenerationParameters generationParams = new NTRUKeyGenerationParameters(random, params);
+                NTRUKeyPairGenerator keyGenerator = new NTRUKeyPairGenerator();
+                keyGenerator.init(generationParams);
+                AsymmetricCipherKeyPair keyPair = keyGenerator.generateKeyPair();
 
                 byte[] returnedPk=((NTRUPublicKeyParameters)keyPair.getPublic()).getPublicKey();
                 byte[] returnedSk=((NTRUPrivateKeyParameters)keyPair.getPrivate()).getPrivateKey();
 
                 NTRUPublicKeyParameters pk = new NTRUPublicKeyParameters(params, returnedPk);
                 NTRUKEMGenerator encapsulator = new NTRUKEMGenerator(random);
-                SecretWithEncapsulation encapsulation = encapsulator.generateEncapsulated(pk);
-                byte[] returnedCt = encapsulation.getEncapsulation();
-
-                byte[] returnedSecret = encapsulation.getSecret();
+                SecretWithEncapsulation encapsulatedSecret = encapsulator.generateEncapsulated(pk);
+                byte[] returnedCt = encapsulatedSecret.getEncapsulation();
+                byte[] returnedSecret = encapsulatedSecret.getSecret();
 
                 NTRUPrivateKeyParameters sk = new NTRUPrivateKeyParameters(params, returnedSk);
                 NTRUKEMExtractor decapsulator = new NTRUKEMExtractor(sk);

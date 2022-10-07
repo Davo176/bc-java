@@ -106,27 +106,27 @@ public class ClassicMcElieceTest
                 //Generate Random from seed (assume this works correctly)
                 NISTSecureRandom random = new NISTSecureRandom(seed, null);
                 
-                CMCEKeyPairGenerator kpGen = new CMCEKeyPairGenerator();
-                CMCEKeyGenerationParameters genParam = new CMCEKeyGenerationParameters(random, parameters);
+                CMCEKeyPairGenerator keyGenerator = new CMCEKeyPairGenerator();
+                CMCEKeyGenerationParameters generationParams = new CMCEKeyGenerationParameters(random, parameters);
                 
-                kpGen.init(genParam);
-                AsymmetricCipherKeyPair keyPair = kpGen.generateKeyPair();
+                keyGenerator.init(generationParams);
+                AsymmetricCipherKeyPair keyPair = keyGenerator.generateKeyPair();
 
-                CMCEPublicKeyParameters pubParams = (CMCEPublicKeyParameters)keyPair.getPublic();
-                CMCEPrivateKeyParameters privParams =(CMCEPrivateKeyParameters)keyPair.getPrivate();
+                CMCEPublicKeyParameters publicKeyParams = (CMCEPublicKeyParameters)keyPair.getPublic();
+                CMCEPrivateKeyParameters privateKeyParams =(CMCEPrivateKeyParameters)keyPair.getPrivate();
 
-                byte[] returnedPk = pubParams.getEncoded();
-                byte[] returnedSk = privParams.getEncoded();
+                byte[] returnedPk = publicKeyParams.getEncoded();
+                byte[] returnedSk = privateKeyParams.getEncoded();
 
-                CMCEKEMGenerator CMCEEncCipher = new CMCEKEMGenerator(random);
-                SecretWithEncapsulation secretEncapsulation = CMCEEncCipher.generateEncapsulated(pubParams);
+                CMCEKEMGenerator encapsulator = new CMCEKEMGenerator(random);
+                SecretWithEncapsulation secretEncapsulation = encapsulator.generateEncapsulated(publicKeyParams);
                 byte[] returnedCt = secretEncapsulation.getEncapsulation();
 
                 byte[] returnedSecret = secretEncapsulation.getSecret();
 
-                CMCEKEMExtractor cmceDecCipher = new CMCEKEMExtractor(privParams);
+                CMCEKEMExtractor decapsulator = new CMCEKEMExtractor(privateKeyParams);
 
-                byte[] decapsulatedSecret = cmceDecCipher.extractSecret(returnedCt);
+                byte[] decapsulatedSecret = decapsulator.extractSecret(returnedCt);
 
                 //ASSERT EQUAL
                 String baseAssertMessage = "TEST FAILED: " + name+ " " + count + ": ";

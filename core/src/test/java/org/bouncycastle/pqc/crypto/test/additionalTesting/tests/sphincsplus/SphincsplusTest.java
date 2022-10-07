@@ -166,38 +166,36 @@ public class SphincsplusTest
 
                 System.out.println("Testing Case: "+count);
 
-                SPHINCSPlusKeyPairGenerator kpGen = new SPHINCSPlusKeyPairGenerator();
+                SPHINCSPlusKeyPairGenerator keyGenerator = new SPHINCSPlusKeyPairGenerator();
                 SecureRandom random = new FixedSecureRandom(expectedSk);
 
-                SPHINCSPlusParameters parameters;
-
-                parameters = params[i];
+                SPHINCSPlusParameters parameters = params[i];
 
                 //
                 // Generate keys and test.
                 //
-                kpGen.init(new SPHINCSPlusKeyGenerationParameters(random, parameters));
-                AsymmetricCipherKeyPair kp = kpGen.generateKeyPair();
+                keyGenerator.init(new SPHINCSPlusKeyGenerationParameters(random, parameters));
+                AsymmetricCipherKeyPair kp = keyGenerator.generateKeyPair();
 
-                SPHINCSPlusPublicKeyParameters pubParams = (SPHINCSPlusPublicKeyParameters)kp.getPublic();
-                SPHINCSPlusPrivateKeyParameters privParams = (SPHINCSPlusPrivateKeyParameters)kp.getPrivate();
+                SPHINCSPlusPublicKeyParameters publicKeyParams = (SPHINCSPlusPublicKeyParameters)kp.getPublic();
+                SPHINCSPlusPrivateKeyParameters privateKeyParams = (SPHINCSPlusPrivateKeyParameters)kp.getPrivate();
 
                 System.out.println("test1");
-                assertTrue(name + " " + count + ": public key", Arrays.areEqual(Arrays.concatenate(pubParams.getParameters().getEncoded(), expectedPk), pubParams.getEncoded()));
-                assertTrue(name + " " + count + ": secret key", Arrays.areEqual(Arrays.concatenate(privParams.getParameters().getEncoded(), expectedSk), privParams.getEncoded()));
-
+                
                 //
                 // Signature test
                 //
-
                 SPHINCSPlusSigner signer = new SPHINCSPlusSigner();
-
-                signer.init(true, new ParametersWithRandom(privParams, new FixedSecureRandom(optrand)));
-
+                
+                signer.init(true, new ParametersWithRandom(privateKeyParams, new FixedSecureRandom(optrand)));
+                
                 byte[] sigGenerated = signer.generateSignature(msg);
                 byte[] attachedSig = Arrays.concatenate(sigGenerated, msg);
-
-                signer.init(false, pubParams);
+                
+                signer.init(false, publicKeyParams);
+                
+                assertTrue(name + " " + count + ": public key", Arrays.areEqual(Arrays.concatenate(publicKeyParams.getParameters().getEncoded(), expectedPk), publicKeyParams.getEncoded()));
+                assertTrue(name + " " + count + ": secret key", Arrays.areEqual(Arrays.concatenate(privateKeyParams.getParameters().getEncoded(), expectedSk), privateKeyParams.getEncoded()));
 
                 assertTrue(name + " " + count + ": signature verify", signer.verifySignature(msg, Arrays.copyOfRange(expectedSm, 0, sigGenerated.length)));
 
