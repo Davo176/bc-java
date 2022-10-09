@@ -1,8 +1,10 @@
 package org.bouncycastle.pqc.crypto.test.additionalTesting.tests.ntruprime;
 
+import junit.framework.AssertionFailedError;
 //Import dependencies
 import junit.framework.TestCase;
 import java.io.*;
+import java.util.ArrayList;
 
 //Dependencies Written by Bouncy Castle
 import org.bouncycastle.util.encoders.Hex;
@@ -37,6 +39,8 @@ public class NtruLPRimeDecapTest
             NTRULPRimeParameters.ntrulpr1013,
             NTRULPRimeParameters.ntrulpr1277
         };
+
+        ArrayList<String> failures = new ArrayList<String>();
 
         for (int fileIndex = 0; fileIndex < files.length; fileIndex++)
         {
@@ -97,10 +101,17 @@ public class NtruLPRimeDecapTest
 
                 //ASSERT EQUAL
                 String baseAssertMessage = "TEST FAILED: " + name+ " " + count + ": ";
-
-                assertTrue(baseAssertMessage+"shared secret", Arrays.areEqual(expectedSs,0,params.getSessionKeySize()/8,decapsulatedSecret,0,params.getSessionKeySize()/8));
+                try {
+                    
+                    assertTrue(baseAssertMessage+"shared secret", Arrays.areEqual(expectedSs,0,params.getSessionKeySize()/8,decapsulatedSecret,0,params.getSessionKeySize()/8));
+                } catch (AssertionFailedError e) {
+                    failures.add(baseAssertMessage+"shared secret");
+                }
                 System.out.println("All Passed");
             }
+        }
+        for (String fail:failures){
+            System.out.println(fail);
         }
     }
 }

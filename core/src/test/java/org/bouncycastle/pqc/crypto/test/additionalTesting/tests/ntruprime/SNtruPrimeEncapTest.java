@@ -17,7 +17,9 @@ import org.bouncycastle.pqc.crypto.test.NISTSecureRandom;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 
+import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
 
 public class SNtruPrimeEncapTest 
@@ -45,6 +47,8 @@ extends TestCase
             SNTRUPrimeParameters.sntrup1013,
             SNTRUPrimeParameters.sntrup1277
         };
+
+        ArrayList<String> failures = new ArrayList<String>();
 
         for (int fileIndex = 0; fileIndex < files.length; fileIndex++)
         {
@@ -103,12 +107,28 @@ extends TestCase
 
 
                 //ASSERT EQUAL
-                String baseAssertMessage = "TEST FAILED: " + name+ " " + count + ": ";                
-                assertTrue(baseAssertMessage+"cipher text", Arrays.areEqual(expectedCt,returnedCt));
-                assertTrue(baseAssertMessage+"shared secret from party 1", Arrays.areEqual(expectedSs,0,params.getSessionKeySize()/8,returnedSecret,0,params.getSessionKeySize()/8));
+                String baseAssertMessage = "TEST FAILED: " + name+ " " + count + ": ";      
+                try {
+                    
+                    assertTrue(baseAssertMessage+"cipher text", Arrays.areEqual(expectedCt,returnedCt));
+                    System.out.println("All Passed");
+                } catch (AssertionFailedError e) {
+                    // TODO: handle exception
+                    failures.add(baseAssertMessage+"cipher text");
 
-                System.out.println("All Passed");
+                }          
+                try {
+                    assertTrue(baseAssertMessage+"shared secret from party 1", Arrays.areEqual(expectedSs,0,params.getSessionKeySize()/8,returnedSecret,0,params.getSessionKeySize()/8));
+                    
+                } catch (AssertionFailedError e) {
+                    // TODO: handle exception
+                    failures.add(baseAssertMessage+"shared secret from party 1");
+                }
+
             }
+        }
+        for (String fail:failures){
+            System.out.println(fail);
         }
     }
 }

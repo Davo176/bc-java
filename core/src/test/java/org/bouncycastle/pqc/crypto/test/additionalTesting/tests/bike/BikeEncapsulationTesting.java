@@ -3,6 +3,8 @@ package org.bouncycastle.pqc.crypto.test.additionalTesting.tests.bike;
 //Import dependencies
 import junit.framework.TestCase;
 import java.io.*;
+import java.util.ArrayList;
+import junit.framework.AssertionFailedError;
 
 //Dependencies Written by Bouncy Castle
 import org.bouncycastle.util.encoders.Hex;
@@ -33,6 +35,7 @@ public class BikeEncapsulationTesting
             BIKEParameters.bike192,
             BIKEParameters.bike256
         };
+        ArrayList<String> failures = new ArrayList<String>();
 
         for (int fileIndex = 0; fileIndex < files.length; fileIndex++)
         {
@@ -40,7 +43,7 @@ public class BikeEncapsulationTesting
             System.out.println("testing: " + name);
             InputStream src = BikeEncapsulationTesting.class.getResourceAsStream("/org/bouncycastle/pqc/crypto/test/additionalTesting/resources/bike/" + name);
             BufferedReader br = new BufferedReader(new InputStreamReader(src));
-
+                
             String line = null;
             while ((line = br.readLine()) != null){
                 //Find next test
@@ -51,7 +54,8 @@ public class BikeEncapsulationTesting
                 }
                 String count = line.substring(countIndex + "count = ".length()).trim();
                 line = br.readLine();
-                
+                int intCount = Integer.parseInt(count);
+
                 //Get Seed
                 int seedIndex = line.indexOf("seed = ");
                 String seedString = line.substring(seedIndex + "seed = ".length()).trim();
@@ -89,16 +93,25 @@ public class BikeEncapsulationTesting
                 SecretWithEncapsulation encapsulatedSecret = encapsulator.generateEncapsulated(publicKeyParams);
                 byte[] returnedCt = encapsulatedSecret.getEncapsulation();
                 byte[] returnedSecret = encapsulatedSecret.getSecret();
-
+                
                 //ASSERT EQUAL
                 String baseAssertMessage = "TEST FAILED: " + name+ " " + count + ": ";
-                
-                assertTrue(baseAssertMessage+"cipher text", Arrays.areEqual(expectedCt,returnedCt));
-
-                //by equality axiom, if these two are equal, returned = decapsulated
-                assertTrue(baseAssertMessage+"shared secret from party 1", Arrays.areEqual(expectedSs,0,params.getSessionKeySize()/8,returnedSecret,0,params.getSessionKeySize()/8));
-                System.out.println("All Passed");
+                try {
+                    assertTrue(baseAssertMessage+"cipher text", Arrays.areEqual(expectedCt,returnedCt));
+                    System.out.println("All Passed");
+                } catch (AssertionFailedError e) {
+                    failures.add(baseAssertMessage+"cipher text");
+                }
+                try {
+                    assertTrue(baseAssertMessage+"shared secret from party 1", Arrays.areEqual(expectedSs,0,params.getSessionKeySize()/8,returnedSecret,0,params.getSessionKeySize()/8));
+                } catch (AssertionFailedError e) {
+                    failures.add(baseAssertMessage+"shared secret from party 1");
+                }
             }
+        }
+
+        for (String fail:failures){
+            System.out.println(fail);
         }
     }
 }

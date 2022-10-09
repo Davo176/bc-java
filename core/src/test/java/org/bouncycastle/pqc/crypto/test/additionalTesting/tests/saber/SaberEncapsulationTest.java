@@ -1,8 +1,10 @@
 package org.bouncycastle.pqc.crypto.test.additionalTesting.tests.saber;
 
+import junit.framework.AssertionFailedError;
 //Import dependencies
 import junit.framework.TestCase;
 import java.io.*;
+import java.util.ArrayList;
 
 //Dependencies Written by Bouncy Castle
 import org.bouncycastle.util.encoders.Hex;
@@ -33,6 +35,8 @@ public class SaberEncapsulationTest
             SABERParameters.saberkem256r3,
             SABERParameters.firesaberkem256r3,
         };
+
+        ArrayList<String> failures = new ArrayList<String>();
 
         for (int fileIndex = 0; fileIndex < files.length; fileIndex++)
         {
@@ -92,12 +96,25 @@ public class SaberEncapsulationTest
 
                 //ASSERT EQUAL
                 String baseAssertMessage = "TEST FAILED: " + name+ " " + count + ": ";
-                
-                assertTrue(baseAssertMessage+"cipher text", Arrays.areEqual(expectedCt,returnedCt));
+                try {
+                    assertTrue(baseAssertMessage+"cipher text", Arrays.areEqual(expectedCt,returnedCt));
+                    System.out.println("All Passed");
+                } catch (AssertionFailedError e) {
+                    failures.add(baseAssertMessage+"cipher text");
+                }
 
-                assertTrue(baseAssertMessage+"shared secret from party 1", Arrays.areEqual(expectedSs,returnedSecret));
-                System.out.println("All Passed");
+                try {
+                    assertTrue(baseAssertMessage+"shared secret from party 1", Arrays.areEqual(expectedSs,returnedSecret));
+                    System.out.println("All Passed");
+                } catch (AssertionFailedError e) {
+                    failures.add(baseAssertMessage+"shared secret from party 1");
+                }
+
+                
             }
+        }
+        for (String fail:failures){
+            System.out.println(fail);
         }
     }
 }

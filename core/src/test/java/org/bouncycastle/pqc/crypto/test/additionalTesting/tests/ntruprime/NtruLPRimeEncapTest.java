@@ -1,8 +1,10 @@
 package org.bouncycastle.pqc.crypto.test.additionalTesting.tests.ntruprime;
 
+import junit.framework.AssertionFailedError;
 //Import dependencies
 import junit.framework.TestCase;
 import java.io.*;
+import java.util.ArrayList;
 
 //Dependencies Written by Bouncy Castle
 import org.bouncycastle.util.encoders.Hex;
@@ -40,6 +42,8 @@ public class NtruLPRimeEncapTest
             NTRULPRimeParameters.ntrulpr1013,
             NTRULPRimeParameters.ntrulpr1277
         };
+
+        ArrayList<String> failures = new ArrayList<String>();
 
         for (int fileIndex = 0; fileIndex < files.length; fileIndex++)
         {
@@ -104,13 +108,28 @@ public class NtruLPRimeEncapTest
 
                 //ASSERT EQUAL
                 String baseAssertMessage = "TEST FAILED: " + name+ " " + count + ": ";
+                try {
+                    assertTrue(baseAssertMessage+"cipher text", Arrays.areEqual(expectedCt,returnedCt));
+                    System.out.println("All Passed");
+                } catch (AssertionFailedError e) {
+                    // TODO: handle exception
+                    failures.add(baseAssertMessage+"cipher text");
+                }
 
-                assertTrue(baseAssertMessage+"cipher text", Arrays.areEqual(expectedCt,returnedCt));
+                try {
+                    assertTrue(baseAssertMessage+"shared secret from party 1", Arrays.areEqual(expectedSs,0,params.getSessionKeySize()/8,returnedSecret,0,params.getSessionKeySize()/8));
+                    System.out.println("All Passed");
+                } catch (AssertionFailedError e) {
+                    // TODO: handle exception
+                    failures.add(baseAssertMessage+"shared secret from party 1");
+                }
 
                 //by equality axiom, if these two are equal, returned = decapsulated
-                assertTrue(baseAssertMessage+"shared secret from party 1", Arrays.areEqual(expectedSs,0,params.getSessionKeySize()/8,returnedSecret,0,params.getSessionKeySize()/8));
-                System.out.println("All Passed");
+                
             }
+        }
+        for (String fail:failures){
+            System.out.println(fail);
         }
     }
 }

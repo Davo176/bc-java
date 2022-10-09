@@ -7,6 +7,7 @@ import java.security.SecureRandom;
 
 import org.bouncycastle.pqc.crypto.test.NISTSecureRandom;
 
+import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
 import org.bouncycastle.crypto.AsymmetricCipherKeyPair;
 import org.bouncycastle.crypto.params.ParametersWithRandom;
@@ -131,6 +132,11 @@ public class FalconTest
 
                 // AssertTrue
                 //keyGenerator
+                try {
+                    
+                } catch (AssertionFailedError e) {
+                    // TODO: handle exception
+                }
                 assertTrue(name + " " + count + " public key", Arrays.areEqual(respk, 0, respk.length, expectedPk, 1, expectedPk.length));
                 assertTrue(name + " " + count + " public key", Arrays.areEqual(ressk, 0, ressk.length, expectedSk, 1, expectedSk.length));
                 //sign

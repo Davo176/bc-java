@@ -1,8 +1,10 @@
 package org.bouncycastle.pqc.crypto.test.additionalTesting.tests.saber;
 
+import junit.framework.AssertionFailedError;
 //Import dependencies
 import junit.framework.TestCase;
 import java.io.*;
+import java.util.ArrayList;
 
 //Dependencies Written by Bouncy Castle
 import org.bouncycastle.util.encoders.Hex;
@@ -32,6 +34,8 @@ public class SaberDecapsulationTest
             SABERParameters.saberkem256r3,
             SABERParameters.firesaberkem256r3,
         };
+
+        ArrayList<String> failures = new ArrayList<String>();
 
         for (int fileIndex = 0; fileIndex < files.length; fileIndex++)
         {
@@ -87,9 +91,16 @@ public class SaberDecapsulationTest
                 //ASSERT EQUAL
                 String baseAssertMessage = "TEST FAILED: " + name+ " " + count + ": ";
                 //by equality axiom, if these two are equal, returned = decapsulated
-                assertTrue(baseAssertMessage+"shared secret from party 2", Arrays.areEqual(expectedSs,decapsulatedSecret));
-                System.out.println("All Passed");
+                try {
+                    assertTrue(baseAssertMessage+"shared secret", Arrays.areEqual(expectedSs,decapsulatedSecret));
+                    System.out.println("All Passed");
+                } catch (AssertionFailedError e) {
+                    failures.add(baseAssertMessage+"shared secret");
+                }
             }
+        }
+        for (String fail:failures){
+            System.out.println(fail);
         }
     }
 }

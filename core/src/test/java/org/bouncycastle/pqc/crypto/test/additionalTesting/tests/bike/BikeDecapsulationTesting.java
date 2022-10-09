@@ -1,8 +1,10 @@
 package org.bouncycastle.pqc.crypto.test.additionalTesting.tests.bike;
 
+import junit.framework.AssertionFailedError;
 //Import dependencies
 import junit.framework.TestCase;
 import java.io.*;
+import java.util.ArrayList;
 
 //Dependencies Written by Bouncy Castle
 import org.bouncycastle.util.encoders.Hex;
@@ -33,6 +35,8 @@ public class BikeDecapsulationTesting
             BIKEParameters.bike256
         };
 
+        ArrayList<String> failures = new ArrayList<String>();
+
         for (int fileIndex = 0; fileIndex < files.length; fileIndex++)
         {
             String name = files[fileIndex];
@@ -50,7 +54,8 @@ public class BikeDecapsulationTesting
                 }
                 String count = line.substring(countIndex + "count = ".length()).trim();
                 line = br.readLine();
-                
+                int intCount = Integer.parseInt(count);
+
                 //Get Seed
                 int seedIndex = line.indexOf("seed = ");
                 String seedString = line.substring(seedIndex + "seed = ".length()).trim();
@@ -90,9 +95,16 @@ public class BikeDecapsulationTesting
 
                 //ASSERT EQUAL
                 String baseAssertMessage = "TEST FAILED: " + name+ " " + count + ": ";
-                assertTrue(baseAssertMessage+"shared secret from party 2", Arrays.areEqual(expectedSs,0,parameters.getSessionKeySize()/8,decapsulatedSecret,0,parameters.getSessionKeySize()/8));
-                System.out.println("All Passed");
+                try {
+                    assertTrue(baseAssertMessage+"shared secret from party 2", Arrays.areEqual(expectedSs,0,parameters.getSessionKeySize()/8,decapsulatedSecret,0,parameters.getSessionKeySize()/8));
+                    System.out.println("All Passed");
+                } catch (AssertionFailedError e) {
+                    failures.add(baseAssertMessage+"shared secret from party 1");
+                }
             }
+        }
+        for (String fail:failures){
+            System.out.println(fail);
         }
     }
 }
