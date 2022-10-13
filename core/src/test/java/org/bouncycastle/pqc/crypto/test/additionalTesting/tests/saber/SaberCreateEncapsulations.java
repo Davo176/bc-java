@@ -1,4 +1,4 @@
-package org.bouncycastle.pqc.crypto.test.additionalTesting.tests.ntru;
+package org.bouncycastle.pqc.crypto.test.additionalTesting.tests.saber;
 
 import junit.framework.TestCase;
 import java.io.*;
@@ -9,43 +9,40 @@ import org.bouncycastle.pqc.crypto.test.NISTSecureRandom;
 
 import org.bouncycastle.crypto.SecretWithEncapsulation;
 //Asset Under Test
-import org.bouncycastle.pqc.crypto.ntru.NTRUKEMGenerator;
-import org.bouncycastle.pqc.crypto.ntru.NTRUParameters;
-import org.bouncycastle.pqc.crypto.ntru.NTRUPublicKeyParameters;
+import org.bouncycastle.pqc.crypto.saber.SABERKEMGenerator;
+import org.bouncycastle.pqc.crypto.saber.SABERParameters;
+import org.bouncycastle.pqc.crypto.saber.SABERPublicKeyParameters;
 
 
-public class NTRUCreateEncapsulation extends TestCase
+public class SaberCreateEncapsulations extends TestCase
 {
-    public void testCreateEncapsulationsNTRU() 
+    public void testCreateEncapsulationsSABER() 
         throws Exception
     {
         String[] files;
         files = new String[]{
-            "keypairs_ref_935.rsp",
-            "keypairs_ref_1234.rsp",
-            "keypairs_ref_1450.rsp",
-            "keypairs_ref_1590.rsp",
+            "keypairs_ref_1568.rsp",
+            "keypairs_ref_2304.rsp",
+            "keypairs_ref_3040.rsp",
         };
 
         String[] newFiles = new String[]{
-            "encapsulation_java_935.rsp",
-            "encapsulation_java_1234.rsp",
-            "encapsulation_java_1450.rsp",
-            "encapsulation_java_1590.rsp",
+            "encapsulation_java_1568.rsp",
+            "encapsulation_java_2304.rsp",
+            "encapsulation_java_3040.rsp",
         };
 
-        NTRUParameters[] paramList = new NTRUParameters[]{
-            NTRUParameters.ntruhps2048509,
-            NTRUParameters.ntruhps2048677,
-            NTRUParameters.ntruhrss701,
-            NTRUParameters.ntruhps4096821,
+        SABERParameters[] paramList = new SABERParameters[]{
+            SABERParameters.lightsaberkem256r3,
+            SABERParameters.saberkem256r3,
+            SABERParameters.firesaberkem256r3,
         };
 
         for (int fileIndex = 0; fileIndex < files.length; fileIndex++)
         {
             String newFileName = newFiles[fileIndex];
             try {
-            File myObj = new File("src/test/java/org/bouncycastle/pqc/crypto/test/additionalTesting/resources/ntru/interoperability/"+newFileName);
+            File myObj = new File("src/test/java/org/bouncycastle/pqc/crypto/test/additionalTesting/resources/saber/interoperability/"+newFileName);
             if (myObj.createNewFile()) {
                     System.out.println("File created: " + myObj.getName());
             } else {
@@ -56,10 +53,10 @@ public class NTRUCreateEncapsulation extends TestCase
                 e.printStackTrace();
             }
             
-            FileWriter newFile = new FileWriter("src/test/java/org/bouncycastle/pqc/crypto/test/additionalTesting/resources/ntru/interoperability/"+newFileName);
+            FileWriter newFile = new FileWriter("src/test/java/org/bouncycastle/pqc/crypto/test/additionalTesting/resources/saber/interoperability/"+newFileName);
             String name = files[fileIndex];
             System.out.println("testing: " + name);
-            InputStream src = NTRUEncapsulationTest.class.getResourceAsStream("/org/bouncycastle/pqc/crypto/test/additionalTesting/resources/ntru/interoperability/" + name);
+            InputStream src = SaberCreateEncapsulations.class.getResourceAsStream("/org/bouncycastle/pqc/crypto/test/additionalTesting/resources/saber/interoperability/" + name);
             BufferedReader br = new BufferedReader(new InputStreamReader(src));
 
             String line = null;
@@ -99,13 +96,13 @@ public class NTRUCreateEncapsulation extends TestCase
                 }
 
                 //Get Parameters
-                NTRUParameters params = paramList[fileIndex];
+                SABERParameters params = paramList[fileIndex];
                 //Generate Random from seed (assume this works correctly)
                 NISTSecureRandom random = new NISTSecureRandom(entropy_input, null);
 
-                NTRUPublicKeyParameters publicKeyParams = new NTRUPublicKeyParameters(params, pk);
+                SABERPublicKeyParameters publicKeyParams = new SABERPublicKeyParameters(params, pk);
 
-                NTRUKEMGenerator encapsulator = new NTRUKEMGenerator(random);
+                SABERKEMGenerator encapsulator = new SABERKEMGenerator(random);
                 SecretWithEncapsulation encapsulatedSecret = encapsulator.generateEncapsulated(publicKeyParams);
                 byte[] returnedCt = encapsulatedSecret.getEncapsulation();
                 byte[] returnedSecret = encapsulatedSecret.getSecret();
