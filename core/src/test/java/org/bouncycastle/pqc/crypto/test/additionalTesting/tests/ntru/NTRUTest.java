@@ -28,17 +28,17 @@ public class NTRUTest
     {
         String[] files;
         files = new String[]{
-            //"addRand_935.rsp",
-            //"addRand_1234.rsp",
+            "addRand_935.rsp",
+            "addRand_1234.rsp",
             "addRand_1590.rsp",
-            //"addRand_1450.rsp"
+            "addRand_1450.rsp"
         };
 
         NTRUParameters[] paramList = {
-            //NTRUParameters.ntruhps2048509,
-            //NTRUParameters.ntruhps2048677,
+            NTRUParameters.ntruhps2048509,
+            NTRUParameters.ntruhps2048677,
             NTRUParameters.ntruhps4096821,
-            //NTRUParameters.ntruhrss701
+            NTRUParameters.ntruhrss701
         };
 
         for (int fileIndex = 0; fileIndex < files.length; fileIndex++)
