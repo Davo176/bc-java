@@ -28,18 +28,18 @@ public class FrodoTest
     {
         String[] files;
         files = new String[]{
-            // "addRandTest_19888.rsp",
-            // "addRandTest_31296.rsp",
-            // "addRandTest_43088.rsp",
-            "addRandTest_shake_19888.rsp",//fail
-            "addRandTest_shake_31296.rsp",//fail
-            "addRandTest_shake_43088.rsp",//fail
+            "addRandTest_19888.rsp",
+            "addRandTest_31296.rsp",
+            "addRandTest_43088.rsp",
+            "addRandTest_shake_19888.rsp",
+            "addRandTest_shake_31296.rsp",
+            "addRandTest_shake_43088.rsp",
         };
 
         FrodoParameters[] paramList = {
-            // FrodoParameters.frodokem640aes,
-            // FrodoParameters.frodokem976aes,
-            // FrodoParameters.frodokem1344aes,
+            FrodoParameters.frodokem640aes,
+            FrodoParameters.frodokem976aes,
+            FrodoParameters.frodokem1344aes,
             FrodoParameters.frodokem640shake, 
             FrodoParameters.frodokem976shake,
             FrodoParameters.frodokem1344shake,
