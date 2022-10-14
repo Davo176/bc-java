@@ -20,7 +20,7 @@ import java.io.InputStreamReader;
 
 import junit.framework.TestCase;
 
-public class SNtruPrimeDecapTest 
+public class SntruPrimeCheckDecapsulations 
 extends TestCase
 {
     public void testSNTRUPVectors() 
@@ -28,12 +28,12 @@ extends TestCase
     {
         String[] files;
         files = new String[]{
-            "addDecap653.rsp", //fail
-            "addDecap761.rsp", //fail
-            "addDecap857.rsp", //fail
-            "addDecap953.rsp", //fail
-            "addDecap1013.rsp",//fail
-            "addDecap1277.rsp",//fail
+            "encapsulation_java_ref_1518.rsp", 
+            "encapsulation_java_ref_1763.rsp", 
+            "encapsulation_java_ref_1999.rsp", 
+            "encapsulation_java_ref_2254.rsp", 
+            "encapsulation_java_ref_2417.rsp",
+            "encapsulation_java_ref_3059.rsp",
         };
 
         SNTRUPrimeParameters[] paramList = new SNTRUPrimeParameters[]
@@ -45,12 +45,12 @@ extends TestCase
             SNTRUPrimeParameters.sntrup1013,
             SNTRUPrimeParameters.sntrup1277
         };
-        
+
         for (int fileIndex = 0; fileIndex < files.length; fileIndex++)
         {
             String name = files[fileIndex];
             System.out.println("testing: " + name);
-            InputStream src = NtruLPRimeTest.class.getResourceAsStream("/org/bouncycastle/pqc/crypto/test/additionalTesting/resources/ntruprime/decapTesting/sntru/" + name);
+            InputStream src = NtruLPRimeTest.class.getResourceAsStream("/org/bouncycastle/pqc/crypto/test/additionalTesting/resources/ntruprime/interoperability/sntru/" + name);
             BufferedReader br = new BufferedReader(new InputStreamReader(src));
 
             // Condition holds true till
@@ -66,10 +66,6 @@ extends TestCase
                 String count = line.substring(countIndex + "count = ".length()).trim();
                 line = br.readLine();
                 
-                //Get Seed
-                int seedIndex = line.indexOf("seed = ");
-                String seedString = line.substring(seedIndex + "seed = ".length()).trim();
-                line = br.readLine();
                 //Get Secret Key
                 int secretKeyIndex = line.indexOf("sk = ");
                 String secretKeyString = line.substring(secretKeyIndex + "sk = ".length()).trim();
@@ -84,7 +80,6 @@ extends TestCase
                 line = br.readLine();
 
                 //convert all into byte arrays
-                byte[] seed = Hex.decode(seedString); 
                 byte[] sk = Hex.decode(secretKeyString);
                 byte[] ct = Hex.decode(cipherTextString);
                 byte[] expectedSs = Hex.decode(sharedSecretString);
