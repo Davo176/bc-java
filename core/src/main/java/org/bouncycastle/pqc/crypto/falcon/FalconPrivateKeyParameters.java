@@ -19,6 +19,30 @@ public class FalconPrivateKeyParameters
         this.pk = Arrays.clone(pk_encoded);
     }
 
+    public FalconPrivateKeyParameters(FalconParameters parameters, byte[] pk_encoded)
+    {
+        super(true, parameters);
+        int flen, glen, Flen;
+        if (parameters.getName().equals("falcon-512")){
+            flen=384;
+            glen=384;
+            Flen=512;
+        }else if (parameters.getName().equals("falcon-1024")){
+            flen=640;
+            glen=640;
+            Flen=1024;
+        }else {
+            flen=640;
+            glen=640;
+            Flen=1024;
+        }
+
+        this.f = Arrays.copyOfRange(pk_encoded,0,flen);
+        this.g = Arrays.copyOfRange(pk_encoded,flen,flen+glen);
+        this.F = Arrays.copyOfRange(pk_encoded,flen+glen,flen+glen+Flen);
+        this.pk = Arrays.clone(pk_encoded);
+    }
+
     public byte[] getEncoded()
     {
         return Arrays.concatenate(f, g, F);
