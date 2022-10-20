@@ -28,16 +28,16 @@ public class ClassicMcElieceTest
     {
         String[] files;
         files = new String[]{
-            "3488-64-cmce.rsp",
-            "3488-64-f-cmce.rsp",
-            "4608-96-cmce.rsp",
-            "4608-96-f-cmce.rsp",
-            "6688-128-cmce.rsp",
-            "6688-128-f-cmce.rsp",
-            "6960-119-cmce.rsp",
-            "6960-119-f-cmce.rsp",
-            "8192-128-cmce.rsp",
-            "8192-128-f-cmce.rsp"
+            "std/addRand_6492.rsp",
+            "f/addRand_6492.rsp",
+            "std/addRand_13608.rsp",
+            "f/addRand_13608.rsp",
+            "std/addRand_13932.rsp",
+            "f/addRand_13932.rsp",
+            "std/addRand_13948.rsp",
+            "f/addRand_13948.rsp",
+            "std/addRand_14120.rsp",
+            "f/addRand_14120.rsp"
         };
 
         CMCEParameters[] paramList = new CMCEParameters[]{
@@ -57,7 +57,7 @@ public class ClassicMcElieceTest
         {
             String name = files[fileIndex];
             System.out.println("testing: " + name);
-            InputStream src = ClassicMcElieceTest.class.getResourceAsStream("/org/bouncycastle/pqc/crypto/test/cmce/" + name);
+            InputStream src = ClassicMcElieceTest.class.getResourceAsStream("/org/bouncycastle/pqc/crypto/test/additionalTesting/resources/cmce/interoperability/" + name);
             BufferedReader br = new BufferedReader(new InputStreamReader(src));
 
             String line = null;
